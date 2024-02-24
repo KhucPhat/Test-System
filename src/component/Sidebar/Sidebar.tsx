@@ -15,15 +15,14 @@ const ListItemCustom = styled(ListItem)(() => ({
   flexDirection: "column",
 }));
 
-const Sidebar = () => {
-  const { pathname } = useLocation();
-  console.log(pathname);
+export default function Sidebar() {
+  const location = useLocation();
 
   return (
     <>
       <ListCustom>
-        {sidebarLinks.map((item: INavLink, index) => {
-          const isActive = pathname === item.link;
+        {sidebarLinks.map((item: INavLink, index: number) => {
+          const isInCatalogPath = location.pathname.includes(item.id);
           return (
             <Link
               to={item.link}
@@ -38,7 +37,11 @@ const Sidebar = () => {
                 <Typography
                   sx={{
                     padding: "10px",
-                    color: isActive ? "#ff0000bf" : "#000",
+                    color:
+                      isInCatalogPath ||
+                      (item.id === "home" && location.pathname === "/")
+                        ? "#ff0000bf"
+                        : "#000",
                   }}
                 >
                   {item.label}
@@ -51,6 +54,4 @@ const Sidebar = () => {
       </ListCustom>
     </>
   );
-};
-
-export default Sidebar;
+}

@@ -1,6 +1,6 @@
 import Footer from "@/Footer/Footer";
 import HeaderContainer from "@/Header/HeaderContainer";
-import Sidebar from "@/component/Sidebar/Sidebar";
+import { Sidebar } from "@/component";
 import { Grid } from "@mui/material";
 import { Outlet } from "react-router-dom";
 
