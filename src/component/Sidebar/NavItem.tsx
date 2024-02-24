@@ -1,7 +1,7 @@
 import { INavLink } from "@/types/list";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { List, ListItem, Typography } from "@mui/material";
-import React from "react";
+import * as React from "react";
 import { Link, useLocation } from "react-router-dom";
 
 interface PropsNav {
@@ -11,7 +11,6 @@ interface PropsNav {
 const NavItem: React.FC<PropsNav> = (props) => {
   const { listNav } = props;
   const location = useLocation();
-  console.log(location);
   return (
     <>
       <List>

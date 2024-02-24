@@ -1,14 +1,35 @@
-import NavItem from "@/component/Sidebar/NavItem";
+import { NavItem, StepTab } from "@/component";
 import { listCatalog } from "@/constants/lists/list";
-import { Grid } from "@mui/material";
-import React from "react";
+import { Box, Grid } from "@mui/material";
+import { useParams } from "react-router-dom";
+import TestSystem from "./TestSystem/TestSystem";
 
 const Catalog = () => {
+  const params = useParams();
+
+  const DataItem = () => {
+    switch (params.key) {
+      case "test-system":
+        return <TestSystem />;
+
+      default:
+        return;
+    }
+  };
+
   return (
     <>
-      <Grid container spacing={2}>
-        <Grid item xs={3}>
+      <Grid container spacing={2} sx={{ width: "100%" }}>
+        <Grid item xs={2}>
           <NavItem listNav={listCatalog} />
+        </Grid>
+        <Grid item xs={10}>
+          <Box sx={{ padding: "25px 0px" }}>
+            <StepTab title="Catalog" listItem={listCatalog} />
+            <Box sx={{ padding: "10px 55px 0px" }}>
+              <DataItem />
+            </Box>
+          </Box>
         </Grid>
       </Grid>
     </>
