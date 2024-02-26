@@ -1,9 +1,3 @@
-import {
-  ListAttributeType,
-  ListDisplayedRule,
-  ListPrimitiveType,
-} from "./list";
-
 export type ListFieldTest = {
   id: string;
   label: string;
@@ -31,4 +25,17 @@ export type ListCellTest = {
   action_delete: boolean;
   selected: boolean;
   [key: string]: string | number;
+} & {
+  [key in keyof Omit<
+    ListCellTest,
+    | "id"
+    | "attribute_name"
+    | "attribute_type"
+    | "primitive_type"
+    | "object_type"
+    | "suggest_body"
+    | "displayed_rule"
+    | "action_delete"
+    | "selected"
+  >]?: string | number;
 };

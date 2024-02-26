@@ -76,12 +76,12 @@ const AddNewTest = () => {
     {
       id: "action",
       label: "Action",
-      type: "button",
+      type: "button-delete",
       key: "action_delete",
     },
   ];
 
-  const listItem = [
+  const listCellItem = [
     {
       id: "1",
       attribute_name: "effDate",
@@ -202,13 +202,14 @@ const AddNewTest = () => {
             color: "#fff",
             textTransform: "inherit",
           }}
+          backgroundColor="#ff0000bf"
           action={() => {
             console.log("Add Attribute");
           }}
         />
       </Box>
       <Box>
-        <TableData listRows={fieldRow} listCells={listItem} />
+        <TableData listRows={fieldRow} listCells={listCellItem} />
       </Box>
     </Box>
   );
