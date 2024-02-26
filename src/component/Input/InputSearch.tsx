@@ -3,11 +3,12 @@ import { FormControl, InputAdornment, TextField } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 
 interface PropsInput {
-  style: React.CSSProperties;
+  style?: React.CSSProperties;
+  positionIcon: "end" | "start";
 }
 
 const InputSearch: React.FC<PropsInput> = (props) => {
-  const { style } = props;
+  const { style, positionIcon } = props;
 
   return (
     <>
@@ -18,7 +19,7 @@ const InputSearch: React.FC<PropsInput> = (props) => {
           // onChange={handleChange}
           InputProps={{
             endAdornment: (
-              <InputAdornment position="end">
+              <InputAdornment position={positionIcon}>
                 <SearchIcon />
               </InputAdornment>
             ),

@@ -7,13 +7,14 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import { styled } from "@mui/system";
 import CellItems from "./CellItems";
+import React from "react";
 
 interface TableProps {
   listRows: ListRowTest[];
   listCells: ListCellTest[];
 }
 
-export default function TableData(props: TableProps) {
+const TableData: React.FC<TableProps> = (props) => {
   const { listRows, listCells } = props;
 
   const TableCustomContainer = styled(TableContainer)(() => ({
@@ -66,7 +67,12 @@ export default function TableData(props: TableProps) {
             >
               {listRows.map((row: ListRowTest) => (
                 <TableCustomCell key={`${row.key}-${cell.id}`}>
-                  <CellItems cell={cell} row={row} index={index} />
+                  <CellItems
+                    cell={cell}
+                    row={row}
+                    index={index}
+                    listButton={[]}
+                  />
                 </TableCustomCell>
               ))}
             </TableCustomRow>
@@ -75,4 +81,6 @@ export default function TableData(props: TableProps) {
       </TableCustom>
     </TableCustomContainer>
   );
-}
+};
+
+export default TableData;
