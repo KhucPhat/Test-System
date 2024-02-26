@@ -95,7 +95,7 @@ const TestSystem = () => {
     },
   ];
 
-  const renderBody = () => {
+  const DataBody = () => {
     if (addNew) return <AddNewTest />;
 
     return (
@@ -107,7 +107,11 @@ const TestSystem = () => {
     );
   };
 
-  return <>{renderBody()}</>;
+  return (
+    <>
+      <DataBody />
+    </>
+  );
 };
 
 export default TestSystem;
