@@ -87,6 +87,7 @@ const TableSearch: React.FC<PropTable> = (props) => {
                     {item?.search ? (
                       <InputSearch
                         style={{ width: item.key === "id" ? "120px" : "260px" }}
+                        positionIcon="end"
                       />
                     ) : null}
                   </Box>
