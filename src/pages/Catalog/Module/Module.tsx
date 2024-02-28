@@ -2,7 +2,22 @@ import { InputSearch, MultiCatgory, TableSearch } from "@/component";
 import { Box, Grid } from "@mui/material";
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { faEye, faPen, faTrashCan } from "@fortawesome/free-solid-svg-icons";
+import {
+  faEye,
+  faFile,
+  faPen,
+  faTrashCan,
+} from "@fortawesome/free-solid-svg-icons";
+import { styled } from "@mui/system";
+
+const BoxCustom = styled(Box)(() => ({
+  marginTop: "40px",
+  border: "2px solid #ccc",
+  borderRadius: "4px",
+  height: "480px",
+  maxHeight: "480px",
+  overflow: "scroll",
+}));
 
 const Module = () => {
   const navigate = useNavigate();
@@ -87,50 +102,64 @@ const Module = () => {
 
   const menus = [
     {
-      label: "Menu 1",
+      label: "Catagory 1",
+      icon: faFile,
     },
     {
-      label: "Menu 2",
+      label: "Catagory 2",
+      icon: faFile,
       submenu: [
         {
-          label: "Sub Menu 1",
+          label: "Sub Catagory 1",
+          icon: faFile,
         },
         {
-          label: "Sub Menu 2",
+          label: "Sub Catagory 2",
+          icon: faFile,
         },
       ],
     },
     {
-      label: "Menu 3",
+      label: "Catagory 3",
+      icon: faFile,
       submenu: [
         {
-          label: "Sub Menu 1",
+          label: "Sub 1",
+          icon: faFile,
           submenu: [
             {
               label: "Boom 1",
+              icon: faFile,
             },
             {
               label: "Boom 2",
+              icon: faFile,
             },
           ],
         },
         {
-          label: "Sub Menu 2",
+          label: "Sub 2",
+          icon: faFile,
           submenu: [
             {
               label: "Deep 1",
+              icon: faFile,
             },
             {
               label: "Deep 2",
+              icon: faFile,
               submenu: [
                 {
                   label: "Lorem 1",
+                  icon: faFile,
                 },
                 {
                   label: "Lorem 2",
+                  icon: faFile,
                   submenu: [
                     {
                       label: "Super Deep",
+                      icon: faFile,
                     },
                   ],
                 },
@@ -139,26 +168,32 @@ const Module = () => {
           ],
         },
         {
-          label: "Sub Menu 3",
+          label: "Sub Catagory 3",
+          icon: faFile,
         },
         {
-          label: "Sub Menu 4",
+          label: "Sub Catagory 4",
+          icon: faFile,
           submenu: [
             {
               label: "Last 1",
+              icon: faFile,
             },
             {
               label: "Last 2",
+              icon: faFile,
             },
             {
               label: "Last 3",
+              icon: faFile,
             },
           ],
         },
       ],
     },
     {
-      label: "Menu 4",
+      label: "Catagory 4",
+      icon: faFile,
     },
   ];
 
@@ -172,11 +207,16 @@ const Module = () => {
               placeholder="Search Module Name"
             />
           </Box>
-          <Box sx={{ paddingTop: "40px" }}>
+          <BoxCustom>
             <MultiCatgory menus={menus} />
-          </Box>
+          </BoxCustom>
         </Grid>
         <Grid item xs={9}>
+          <TableSearch
+            listRows={listRows}
+            listCellItem={listCellItem}
+            listButton={listButtonOptions}
+          />
           <TableSearch
             listRows={listRows}
             listCellItem={listCellItem}

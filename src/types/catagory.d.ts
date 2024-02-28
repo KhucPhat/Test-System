@@ -1,29 +1,7 @@
-export type SubMenu4 = {
-  label: string;
-  submenu?: { label: string }[];
-};
-
-export type SubMenu3 = {
-  label: string;
-  submenu?: SubMenu4;
-};
-
-export type SubMenu2 = {
-  label: string;
-  submenu?: SubMenu3;
-};
-
-export type SubMenu1 = {
-  label: string;
-  submenu?: SubMenu2[];
-};
-
-export type SubMenu = {
-  label: string;
-  submenu?: SubMenu1[];
-};
+import { IconDefinition } from "@fortawesome/free-solid-svg-icons";
 
 export type MenuCatagory = {
+  icon: IconDefinition;
   label: string;
-  submenu?: SubMenu[];
+  submenu?: MenuCatagory[];
 };
