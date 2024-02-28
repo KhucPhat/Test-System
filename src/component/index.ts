@@ -1,5 +1,6 @@
 export { default as Sidebar } from "./Sidebar/Sidebar";
 export { default as NavItem } from "./Sidebar/NavItem";
+export { default as MultiCatgory } from "./Sidebar/MultiCatagory/MultiCatagory.tsx";
 export { default as StepTab } from "./Stepper/StepTab";
 export { default as ButtonPrev } from "./Button/ButtonPrev";
 export { default as ButtonOptions } from "./Button/ButtonOptions";

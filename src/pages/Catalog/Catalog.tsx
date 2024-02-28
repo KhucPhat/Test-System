@@ -3,6 +3,7 @@ import { listCatalog } from "@/constants/lists/list";
 import { Box, Grid } from "@mui/material";
 import { useParams } from "react-router-dom";
 import TestSystem from "./TestSystem/TestSystem";
+import Module from "./Module/Module";
 
 const Catalog = () => {
   const params = useParams();
@@ -11,7 +12,8 @@ const Catalog = () => {
     switch (params.key) {
       case "test-system":
         return <TestSystem />;
-
+      case "module":
+        return <Module />;
       default:
         return;
     }

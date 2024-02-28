@@ -22,7 +22,7 @@ interface ListOptionsAuto {
 const CellItems: React.FC<PropCell> = (props) => {
   const { row, cell, index, listButton } = props;
 
-  const renderItem = () => {
+  const DataCells = () => {
     const key = row.key;
     const type = row.type;
     const value = cell[key];
@@ -70,7 +70,11 @@ const CellItems: React.FC<PropCell> = (props) => {
         return;
     }
   };
-  return <>{renderItem()}</>;
+  return (
+    <>
+      <DataCells />
+    </>
+  );
 };
 
 export default CellItems;
