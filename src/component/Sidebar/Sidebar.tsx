@@ -42,6 +42,7 @@ export default function Sidebar() {
                       (item.id === "home" && location.pathname === "/")
                         ? "#ff0000bf"
                         : "#000",
+                    fontWeight: "600",
                   }}
                 >
                   {item.label}
