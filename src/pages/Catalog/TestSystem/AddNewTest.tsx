@@ -1,6 +1,7 @@
 import { ButtonInherit, InputText, TableData } from "@/component";
 import { Box } from "@mui/material";
 import React from "react";
+import _ from 'lodash';
 
 const AddNewTest = () => {
   const listField = [

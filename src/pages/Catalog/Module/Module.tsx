@@ -208,7 +208,7 @@ const Module = () => {
             />
           </Box>
           <BoxCustom>
-            <MultiCatgory menus={menus} />
+            <MultiCatgory menus={menus} navigate={navigate} />
           </BoxCustom>
         </Grid>
         <Grid item xs={9}>

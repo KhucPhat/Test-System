@@ -23,6 +23,7 @@ const Label = styled.span`
 
 interface MultiProps {
   menus: MenuCatagory[];
+  navigate:  (path: string) => void;
 }
 
 interface MenuProps {
@@ -45,9 +46,8 @@ interface IconProps {
 }
 
 const MultiCatagory: React.FC<MultiProps> = (props) => {
-  const { menus } = props;
+  const { menus, navigate } = props;
   const [activeMenus, setActiveMenus] = React.useState<string[]>([""]);
-
   // const handleMenuClick = (data) => {
   //   console.log(data);
   // };
@@ -64,8 +64,10 @@ const MultiCatagory: React.FC<MultiProps> = (props) => {
       newActiveMenus.push(menuName);
     }
 
+    navigate(`/catalog/module/?menu-name=${menuName}`)
     setActiveMenus(newActiveMenus);
   };
+  console.log(activeMenus)
 
   const IconSub: React.FC<IconProps> = ({ isToggle }) => {
     return (
@@ -84,11 +86,13 @@ const MultiCatagory: React.FC<MultiProps> = (props) => {
     menuIndex,
   }: MenuProps) => {
     const isToggle: boolean = activeMenus.includes(menuName);
-    console.log(typeof hasSubMenu);
 
     return (
       <ListItem style={{ marginLeft: "12px" }}>
-        <Item dept={dept} onClick={() => handleArrowClick(menuName)}>
+        <Item dept={dept} onClick={() => {
+          handleArrowClick(menuName);
+        
+        }}>
           <div style={{ display: "flex", alignItems: "center" }}>
             {data?.submenu ? <IconSub isToggle={isToggle} /> : null}
             <FontAwesomeIcon icon={data.icon} style={{ marginRight: "10px" }} />
