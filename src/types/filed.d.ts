@@ -4,6 +4,7 @@ export type ListFieldTest = {
   require: boolean;
   span: number;
   placeholder: string;
+  defaultValue: string | number;
   style: React.CSSProperties;
 };
 

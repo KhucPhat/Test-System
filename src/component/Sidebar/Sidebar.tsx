@@ -34,6 +34,7 @@ export default function Sidebar() {
                   icon={item.icon}
                   style={{ fontSize: "20px" }}
                 />
+                {item.svg}
                 <Typography
                   sx={{
                     padding: "10px",

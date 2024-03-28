@@ -1,196 +1,64 @@
-import { ButtonInherit, InputText, TableData } from "@/component";
+import { ButtonInherit } from "@/component";
 import { Box } from "@mui/material";
-import React from "react";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import { useFormik } from "formik";
+import { useEffect, useState } from "react";
+import CreateUpdateTest from "./CreateUpdateTest";
+import TableTest from "./TableTest";
 
 const AddNewTest = () => {
-  const listField = [
-    {
-      id: "id",
-      label: "ID",
-      require: true,
-      span: 2,
-      placeholder: "0",
-      style: { width: "70%" },
-    },
-    {
-      id: "name",
-      label: "Name",
-      require: true,
-      span: 10,
-      placeholder: "Input Text Here",
-      style: { width: "100%" },
-    },
-    {
-      id: "description",
-      label: "Description",
-      require: false,
-      span: 12,
-      placeholder: "Input Text Here",
-      style: { width: "100%" },
-    },
-  ];
-
-  const fieldRow = [
-    {
-      id: "ID",
-      label: "ID",
-      type: "text",
-      key: "id",
-    },
-    {
-      id: "attribute-name",
-      label: "Attribute Name",
-      type: "text",
-      key: "attribute_name",
-    },
-    {
-      id: "attribute-type",
-      label: "Attribute Type",
-      type: "select",
-      key: "attribute_type",
-    },
-    {
-      id: "primitive-data",
-      label: "Primitive Data Type",
-      type: "select",
-      key: "primitive_type",
-    },
-    {
-      id: "object-data",
-      label: "Object Data Type",
-      type: "text",
-      key: "object_type",
-    },
-    {
-      id: "suggest-body",
-      label: "Suggested Body",
-      type: "text",
-      key: "suggest_body",
-    },
-    {
-      id: "displayed-rule",
-      label: "Displayed Rule",
-      type: "select",
-      key: "displayed_rule",
-    },
-    {
-      id: "action",
-      label: "Action",
-      type: "button-delete",
-      key: "action_delete",
-    },
-  ];
-
-  const listCellItem = [
+  const [listAttributes, setListAttributes] = useState<any>([
     {
       id: "1",
       attribute_name: "effDate",
-      attribute_type: [
-        {
-          id: "single",
-          label: "Single Date",
-        },
-      ],
-      primitive_type: [
-        {
-          id: "long",
-          label: "Long Date",
-        },
-      ],
+      attribute_type: 0,
+      primitive_type: 0,
       object_type: "balance",
       suggest_body: "yyyy/MM/dd HH:mm:ss",
-      displayed_rule: [
-        {
-          id: "date",
-          label: "Date",
-        },
-      ],
+      displayed_rule: 2,
       action_delete: true,
       selected: false,
     },
-    {
-      id: "2",
-      attribute_name: "effDate",
-      attribute_type: [
-        {
-          id: "single",
-          label: "Single Date",
-        },
-      ],
-      primitive_type: [
-        {
-          id: "long",
-          label: "Long Date",
-        },
-      ],
-      object_type: "balance",
-      suggest_body: "yyyy/MM/dd HH:mm:ss",
-      displayed_rule: [
-        {
-          id: "date",
-          label: "Date",
-        },
-      ],
-      action_delete: true,
-      selected: true,
+  ]);
+  const fetchGetListData = async () => {
+    let response = await axios.get(
+      "https://jsonplaceholder.typicode.com/posts/1"
+    );
+
+    return response.data;
+  };
+
+  const { data } = useQuery({
+    queryKey: ["posts"],
+    queryFn: fetchGetListData,
+    staleTime: Infinity,
+  });
+
+  const formik = useFormik({
+    initialValues: {
+      id: 0,
+      name: "",
+      description: "",
     },
-    {
-      id: "1",
-      attribute_name: "effDate",
-      attribute_type: [
-        {
-          id: "single",
-          label: "Single Date",
-        },
-      ],
-      primitive_type: [
-        {
-          id: "long",
-          label: "Long Date",
-        },
-      ],
-      object_type: "balance",
-      suggest_body: "yyyy/MM/dd HH:mm:ss",
-      displayed_rule: [
-        {
-          id: "date",
-          label: "Date",
-        },
-      ],
-      action_delete: true,
-      selected: false,
-    },
-    {
-      id: "2",
-      attribute_name: "effDate",
-      attribute_type: [
-        {
-          id: "single",
-          label: "Single Date",
-        },
-      ],
-      primitive_type: [
-        {
-          id: "long",
-          label: "Long Date",
-        },
-      ],
-      object_type: "balance",
-      suggest_body: "yyyy/MM/dd HH:mm:ss",
-      displayed_rule: [
-        {
-          id: "date",
-          label: "Date",
-        },
-      ],
-      action_delete: true,
-      selected: true,
-    },
-  ];
+    onSubmit: () => {},
+  });
+
+  useEffect(() => {
+    if (data) {
+      const tempData = {
+        id: data.id,
+        name: data.title,
+        description: data.body,
+      };
+
+      formik.setValues(tempData);
+    }
+  }, [data]);
 
   return (
     <Box sx={{ width: "100%" }}>
-      <InputText listField={listField} />
+      <CreateUpdateTest formik={formik} data={data} />
       <Box sx={{ padding: "80px 0px 10px", width: "100%", textAlign: "right" }}>
         <ButtonInherit
           title="Add Attribute"
@@ -204,13 +72,27 @@ const AddNewTest = () => {
           }}
           backgroundColor="#ff0000bf"
           action={() => {
-            console.log("Add Attribute");
+            setListAttributes((prev) => [
+              ...prev,
+              {
+                id: "2",
+                attribute_name: "",
+                attribute_type: null,
+                primitive_type: null,
+                object_type: "balance",
+                suggest_body: "yyyy/MM/dd HH:mm:ss",
+                displayed_rule: null,
+                action_delete: true,
+                selected: false,
+              },
+            ]);
           }}
         />
       </Box>
-      <Box>
-        <TableData listRows={fieldRow} listCells={listCellItem} />
-      </Box>
+      <TableTest
+        listAttributes={listAttributes}
+        setListAttributes={setListAttributes}
+      />
     </Box>
   );
 };

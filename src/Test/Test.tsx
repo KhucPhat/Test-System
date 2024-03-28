@@ -1,7 +1,17 @@
 import React from "react";
 
-const Test = () => {
-  return <div>Test</div>;
+interface TestProps {
+  jsonData: any;
+}
+
+const Test: React.FC<TestProps> = (props) => {
+  const { jsonData } = props;
+  return (
+    <div>
+      <h2>Thông tin JSON:</h2>
+      <pre>{JSON.stringify(jsonData, null, 2)}</pre>
+    </div>
+  );
 };
 
 export default Test;

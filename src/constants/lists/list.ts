@@ -8,12 +8,6 @@ import {
 
 export const sidebarLinks = [
   {
-    id: "home",
-    label: "Home",
-    icon: faHouseUser,
-    link: "/",
-  },
-  {
     id: "catalog",
     label: "Catalog",
     icon: faTableCellsLarge,
