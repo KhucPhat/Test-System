@@ -1,0 +1,1 @@
+export const BASE_ROOT = import.meta.env.VITE_REACT_APP_BASE_ROOT

@@ -6,6 +6,8 @@ import { useFormik } from "formik";
 import { useEffect, useState } from "react";
 import CreateUpdateTest from "./CreateUpdateTest";
 import TableTest from "./TableTest";
+import React from "react";
+import _ from "lodash";
 
 const AddNewTest = () => {
   const [listAttributes, setListAttributes] = useState<any>([

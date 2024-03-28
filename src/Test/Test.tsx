@@ -1,16 +1,12 @@
-import React from "react";
+import ParentComponent from "@/pages/TestContext/ParentComponent";
+import React, { useState } from "react";
 
-interface TestProps {
-  jsonData: any;
-}
-
-const Test: React.FC<TestProps> = (props) => {
-  const { jsonData } = props;
+const Test = () => {
+  const [value, setValue] = useState(1);
   return (
-    <div>
-      <h2>Thông tin JSON:</h2>
-      <pre>{JSON.stringify(jsonData, null, 2)}</pre>
-    </div>
+    <>
+      <ParentComponent value={value} />
+    </>
   );
 };
 

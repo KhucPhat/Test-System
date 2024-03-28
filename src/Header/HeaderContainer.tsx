@@ -7,18 +7,27 @@ import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
+import { useTranslation } from "react-i18next";
 
 export default function HeaderContainer() {
   const optionsLang = [
     {
-      id: 1,
+      id: 'vi',
       label: "Tiếng Việt",
     },
     {
-      id: 2,
+      id: 'en',
       label: "English",
     },
   ];
+
+  const { t, i18n } = useTranslation();
+
+  const handleChangeLng = (item) => {
+    i18n.changeLanguage('vi');
+    localStorage.setItem("lng", item.id ?? 'vi');
+  };
+  
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar
@@ -81,8 +90,11 @@ export default function HeaderContainer() {
             <Autocomplete
               disablePortal
               id="combo-box-demo"
-              defaultValue={optionsLang[0]}
               options={optionsLang}
+              onChange={(event, item) => {
+                handleChangeLng(item)
+              }
+              }
               sx={{ width: "150px", marginLeft: "12px" }}
               renderInput={(params) => (
                 <TextField
@@ -96,6 +108,7 @@ export default function HeaderContainer() {
                 />
               )}
             />
+            <Typography>{t('Hello')}</Typography>
           </Box>
         </Toolbar>
       </AppBar>
