@@ -11,8 +11,8 @@ const deleteMenuItem = (id, currentMenus) => {
     });
   };
 
-  const editMenuItem = (id, newData, currentMenus) => {
-    return currentMenus.map(menu => {
+  const editMenuItem = (id: number, newData: any, currentMenus: any) => {
+    return currentMenus.map((menu: any) => {
       if (menu.id === id) {
         return { ...menu, ...newData };
       } else if (menu.submenu) {
@@ -35,4 +35,24 @@ const deleteMenuItem = (id, currentMenus) => {
       }
       return menu;
     });
+  };
+
+  // Chuyển item con của thằng này sang thằng khác
+  const moveSubMenu = (currentParentId, newParentId, submenuItem, menus) => {
+    const updatedMenus = menus.map(menu => {
+      if (menu.id === currentParentId) {
+        menu.submenu = menu.submenu.filter(item => item.id !== submenuItem.id);
+      }
+      if (menu.id === newParentId) {
+        if (!menu.submenu) {
+          menu.submenu = [submenuItem];
+        } else {
+          menu.submenu.push(submenuItem);
+        }
+      } else if (menu.submenu) {
+        menu.submenu = moveSubMenu(currentParentId, newParentId, submenuItem, menu.submenu);
+      }
+      return menu;
+    });
+    return updatedMenus;
   };
