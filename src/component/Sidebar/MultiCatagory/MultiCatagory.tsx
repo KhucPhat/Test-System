@@ -32,6 +32,7 @@ const Label = styled.span`
 
 interface MultiProps {
   menus: MenuCatagory[];
+  navigate: (path: string) => void;
 }
 
 interface MenuProps {
@@ -54,7 +55,7 @@ interface IconProps {
 }
 
 const MultiCatagory: React.FC<MultiProps> = (props) => {
-  const { menus } = props;
+  const { menus, navigate } = props;
   const [activeMenus, setActiveMenus] = React.useState<string[]>([""]);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -75,8 +76,10 @@ const MultiCatagory: React.FC<MultiProps> = (props) => {
       newActiveMenus.push(menuName);
     }
 
+    navigate(`/catalog/module/?menu-name=${menuName}`);
     setActiveMenus(newActiveMenus);
   };
+  console.log(activeMenus);
 
   const handleClose = () => {
     setAnchorEl(null);

@@ -7,15 +7,16 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import { styled } from "@mui/system";
 import CellItems from "./CellItems";
-import React from "react";
+import React, { memo, useCallback, useId } from "react";
 
 interface TableProps {
   listRows: ListRowTest[];
   listCells: ListCellTest[];
+  setListAttributes: any;
 }
 
-const TableData: React.FC<TableProps> = (props) => {
-  const { listRows, listCells } = props;
+const TableData: React.FC<TableProps> = memo((props) => {
+  const { listRows, listCells, setListAttributes } = props;
 
   const TableCustomContainer = styled(TableContainer)(() => ({
     border: "none",
@@ -32,6 +33,22 @@ const TableData: React.FC<TableProps> = (props) => {
   const TableCustomCell = styled(TableCell)(() => ({
     border: "none",
   }));
+
+  const handleChange = useCallback((id: number, field: string, value: any) => {
+    setListAttributes((prevList) => {
+      return prevList.map((item) => {
+        if (item.id === id) {
+          return {
+            ...item,
+            [field]: value,
+          };
+        }
+        return item;
+      });
+    });
+  }, []);
+  const id = useId();
+  console.log(listCells);
 
   return (
     <TableCustomContainer
@@ -59,19 +76,23 @@ const TableData: React.FC<TableProps> = (props) => {
         <TableBody>
           {listCells.map((cell: ListCellTest, index) => (
             <TableCustomRow
-              key={index}
+              key={`${cell.name}-${id}`}
               sx={{
                 "&:last-child td, &:last-child th": { border: 0 },
                 backgroundColor: cell.selected ? "#f0629282" : "transparent",
               }}
             >
               {listRows.map((row: ListRowTest) => (
-                <TableCustomCell key={`${row.key}-${cell.id}`}>
+                <TableCustomCell
+                  key={`${row.key}-${cell.id}`}
+                  id={`${row.key}-${cell.id}`}
+                >
                   <CellItems
                     cell={cell}
                     row={row}
                     index={index}
                     listButton={[]}
+                    handleChange={handleChange}
                   />
                 </TableCustomCell>
               ))}
@@ -81,6 +102,6 @@ const TableData: React.FC<TableProps> = (props) => {
       </TableCustom>
     </TableCustomContainer>
   );
-};
+});
 
 export default TableData;

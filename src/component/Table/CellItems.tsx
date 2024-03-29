@@ -1,17 +1,19 @@
 import { ListCellTest, ListRowTest } from "@/types/filed";
 import { ListButtonOptions, ListCellItems, ListRows } from "@/types/list";
-import { Autocomplete, TextField, Typography } from "@mui/material";
-import React from "react";
+import { Autocomplete, Input, TextField, Typography } from "@mui/material";
+import React, { memo, useId } from "react";
 import ButtonOptions from "../Button/ButtonOptions";
 import ButtonInherit from "../Button/ButtonInherit";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
+import AutoMemo from "./AutoMemo";
 
 interface PropCell {
   row: ListRows | ListRowTest;
   cell: ListCellItems | ListCellTest;
   index: number;
   listButton: ListButtonOptions[];
+  handleChange: any;
 }
 
 interface ListOptionsAuto {
@@ -20,7 +22,9 @@ interface ListOptionsAuto {
 }
 
 const CellItems: React.FC<PropCell> = (props) => {
-  const { row, cell, index, listButton } = props;
+  const { row, cell, index, listButton, handleChange } = props;
+  const id = useId();
+  console.log("re-render");
 
   const DataCells = () => {
     const key = row.key;
@@ -29,9 +33,19 @@ const CellItems: React.FC<PropCell> = (props) => {
 
     switch (type) {
       case "index":
-        return <Typography>{index + 1}</Typography>;
+        return <Typography key={`index-${id}`}>{index + 1}</Typography>;
       case "text":
-        return <Typography>{value}</Typography>;
+        return <Typography key={`text-${id}`}>{value}</Typography>;
+      case "input":
+        return (
+          <Input
+            key={`input-${id}`}
+            defaultValue={value}
+            onBlur={(event) => {
+              handleChange(cell?.id, key, event.target.value);
+            }}
+          />
+        );
       case "button-options":
         return <ButtonOptions listButton={listButton} />;
       case "button-delete":
@@ -49,21 +63,16 @@ const CellItems: React.FC<PropCell> = (props) => {
           />
         );
       case "select":
+        const valueSelected = row?.options?.find(
+          (item) => parseInt(item.value) === parseInt(value)
+        );
         return (
-          <Autocomplete
-            value={value[0]}
-            options={value}
-            getOptionLabel={(option: ListOptionsAuto) => `${option.label}`}
-            id="movie-customized-option-demo"
-            disableCloseOnSelect
-            renderInput={(params) => (
-              <TextField {...params} variant="standard" />
-            )}
-            sx={{
-              "& .css-953pxc-MuiInputBase-root-MuiInput-root::before": {
-                border: "unset !important",
-              },
-            }}
+          <AutoMemo
+            id={cell?.id}
+            keyAuto={key}
+            options={row?.options}
+            valueSelected={valueSelected}
+            handleChange={handleChange}
           />
         );
       default:
@@ -77,4 +86,4 @@ const CellItems: React.FC<PropCell> = (props) => {
   );
 };
 
-export default CellItems;
+export default memo(CellItems);
