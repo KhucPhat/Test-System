@@ -1,6 +1,15 @@
 import { MenuCatagory } from "@/types/catagory";
 import { faCaretDown, faCaretRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  Box,
+  Fade,
+  Menu,
+  MenuItem,
+  Paper,
+  Popper,
+  Typography,
+} from "@mui/material";
 import React from "react";
 import styled from "styled-components";
 
@@ -47,6 +56,8 @@ interface IconProps {
 const MultiCatagory: React.FC<MultiProps> = (props) => {
   const { menus } = props;
   const [activeMenus, setActiveMenus] = React.useState<string[]>([""]);
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
 
   // const handleMenuClick = (data) => {
   //   console.log(data);
@@ -67,6 +78,15 @@ const MultiCatagory: React.FC<MultiProps> = (props) => {
     setActiveMenus(newActiveMenus);
   };
 
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleContextMenu = (event) => {
+    event.preventDefault();
+    setAnchorEl(event.currentTarget);
+  };
+
   const IconSub: React.FC<IconProps> = ({ isToggle }) => {
     return (
       <FontAwesomeIcon
@@ -84,26 +104,29 @@ const MultiCatagory: React.FC<MultiProps> = (props) => {
     menuIndex,
   }: MenuProps) => {
     const isToggle: boolean = activeMenus.includes(menuName);
-    console.log(typeof hasSubMenu);
 
     return (
-      <ListItem style={{ marginLeft: "12px" }}>
-        <Item dept={dept} onClick={() => handleArrowClick(menuName)}>
-          <div style={{ display: "flex", alignItems: "center" }}>
-            {data?.submenu ? <IconSub isToggle={isToggle} /> : null}
-            <FontAwesomeIcon icon={data.icon} style={{ marginRight: "10px" }} />
-          </div>
-          <Label>{data.label} </Label>
-        </Item>
-        {hasSubMenu && data?.submenu ? (
-          <SubMenu
-            dept={dept}
-            data={data.submenu}
-            toggle={isToggle ?? false}
-            menuIndex={menuIndex}
-          />
-        ) : null}
-      </ListItem>
+      // <ListItem
+      //   style={{ marginLeft: "12px" }}
+      //   onContextMenu={handleContextMenu}
+      // >
+      //   <Item dept={dept} onClick={() => handleArrowClick(menuName)}>
+      //     <div style={{ display: "flex", alignItems: "center" }}>
+      //       {data?.submenu ? <IconSub isToggle={isToggle} /> : null}
+      //       <FontAwesomeIcon icon={data.icon} style={{ marginRight: "10px" }} />
+      //     </div>
+      //     <Label>{data.label} </Label>
+      //   </Item>
+      //   {hasSubMenu && data?.submenu ? (
+      //     <SubMenu
+      //       dept={dept}
+      //       data={data.submenu}
+      //       toggle={isToggle ?? false}
+      //       menuIndex={menuIndex}
+      //     />
+      //   ) : null}
+      // </ListItem>
+      <Typography onContextMenu={handleContextMenu}>Menu1</Typography>
     );
   };
 
@@ -115,7 +138,7 @@ const MultiCatagory: React.FC<MultiProps> = (props) => {
     dept = dept + 1;
 
     return (
-      <List>
+      <Box>
         {data.map((menu: MenuCatagory, index) => {
           const menuName = `sidebar-submenu-${dept}-${menuIndex}-${index}`;
           const isSubMenu = menu.submenu ? true : false;
@@ -131,29 +154,47 @@ const MultiCatagory: React.FC<MultiProps> = (props) => {
             />
           );
         })}
-      </List>
+      </Box>
     );
   };
 
   return (
-    <List>
-      {menus.map((menu, index) => {
-        const dept = 1;
-        const menuName = `sidebar-menu-${dept}-${index}`;
-        const isSubMenu = menu.submenu ? true : false;
+    <>
+      <Box>
+        {menus.map((menu, index) => {
+          const dept = 1;
+          const menuName = `sidebar-menu-${dept}-${index}`;
+          const isSubMenu = menu.submenu ? true : false;
 
-        return (
-          <ListMenu
-            dept={dept}
-            data={menu}
-            hasSubMenu={isSubMenu}
-            menuName={menuName}
-            key={menuName}
-            menuIndex={index}
-          />
-        );
-      })}
-    </List>
+          return (
+            <>
+              <ListMenu
+                dept={dept}
+                data={menu}
+                hasSubMenu={isSubMenu}
+                menuName={menuName}
+                key={menuName}
+                menuIndex={index}
+              />
+              <Typography onContextMenu={handleContextMenu}>
+                Menu Typ
+              </Typography>
+            </>
+          );
+        })}
+      </Box>
+      {open && (
+        <Menu
+          anchorEl={anchorEl}
+          open={Boolean(anchorEl)}
+          onClose={handleClose}
+        >
+          <MenuItem onClick={handleClose}>Option 1</MenuItem>
+          <MenuItem onClick={handleClose}>Option 2</MenuItem>
+          <MenuItem onClick={handleClose}>Option 3</MenuItem>
+        </Menu>
+      )}
+    </>
   );
 };
 
