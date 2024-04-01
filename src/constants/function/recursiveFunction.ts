@@ -56,3 +56,32 @@ const deleteMenuItem = (id, currentMenus) => {
     });
     return updatedMenus;
   };
+
+
+  // Hàm di chuyển mục trong mảng
+  const moveItem = (array, from, to) => {
+    const item = array[from];
+    array.splice(from, 1);
+    array.splice(to, 0, item);
+    return array;
+  };
+
+  // Hàm đệ quy để tìm mục và mảng chứa nó
+  const findItemAndMove = (items, id, direction, path = []) => {
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].id === id) {
+        // Tìm thấy mục, xử lý di chuyển
+        if (direction === 'up' && i > 0) {
+          return [...moveItem(items, i, i - 1)];
+        }
+        if (direction === 'down' && i < items.length - 1) {
+          return [...moveItem(items, i, i + 1)];
+        }
+      } else if (items[i].submenu) {
+        // Tìm trong submenu nếu có
+        const result = findItemAndMove(items[i].submenu, id, direction, [...path, i]);
+        if (result) return [...items.slice(0, i), {...items[i], submenu: result}, ...items.slice(i + 1)];
+      }
+    }
+  };
+

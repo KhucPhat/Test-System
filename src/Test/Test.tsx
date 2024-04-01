@@ -1,11 +1,17 @@
-import ParentComponent from "@/pages/TestContext/ParentComponent";
-import React, { useState } from "react";
+import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
 const Test = () => {
-  const [value, setValue] = useState(1);
+
   return (
     <>
-      <ParentComponent value={value} />
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <DemoContainer components={['DatePicker']}>
+          <DatePicker label="Basic date picker" />
+        </DemoContainer>
+      </LocalizationProvider>
     </>
   );
 };
