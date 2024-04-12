@@ -104,28 +104,46 @@ const Module = () => {
     {
       label: "Catagory 1",
       icon: faFile,
+      hasCategory: true,
+      subMenu: [
+        {
+          label: "Object 1,2",
+          icon: faFile,
+          hasCategory: false
+        },
+        {
+          label: "Object 1,3",
+          icon: faFile,
+          hasCategory: false
+        },
+      ]
     },
     {
       label: "Catagory 2",
       icon: faFile,
+      hasCategory: true,
       submenu: [
         {
           label: "Sub Catagory 1",
           icon: faFile,
+          hasCategory: true,
         },
         {
           label: "Sub Catagory 2",
           icon: faFile,
+          hasCategory: true,
         },
       ],
     },
     {
       label: "Catagory 3",
       icon: faFile,
+      hasCategory: true,
       submenu: [
         {
           label: "Sub 1",
           icon: faFile,
+          hasCategory: true,
           submenu: [
             {
               label: "Boom 1",
@@ -140,6 +158,7 @@ const Module = () => {
         {
           label: "Sub 2",
           icon: faFile,
+          hasCategory: true,
           submenu: [
             {
               label: "Deep 1",
@@ -170,10 +189,12 @@ const Module = () => {
         {
           label: "Sub Catagory 3",
           icon: faFile,
+          hasCategory: true,
         },
         {
           label: "Sub Catagory 4",
           icon: faFile,
+          hasCategory: true,
           submenu: [
             {
               label: "Last 1",
@@ -189,11 +210,17 @@ const Module = () => {
             },
           ],
         },
+        {
+          label: "Object 3.21",
+          icon: faFile,
+          hasCategory: false
+        },
       ],
     },
     {
-      label: "Catagory 4",
+      label: "Object 4",
       icon: faFile,
+      hasCategory: false
     },
   ];
 

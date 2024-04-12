@@ -76,7 +76,6 @@ const MultiCatagory: React.FC<MultiProps> = (props) => {
       newActiveMenus.push(menuName);
     }
 
-    navigate(`/catalog/module/?menu-name=${menuName}`);
     setActiveMenus(newActiveMenus);
   };
   console.log(activeMenus);
@@ -109,27 +108,26 @@ const MultiCatagory: React.FC<MultiProps> = (props) => {
     const isToggle: boolean = activeMenus.includes(menuName);
 
     return (
-      // <ListItem
-      //   style={{ marginLeft: "12px" }}
-      //   onContextMenu={handleContextMenu}
-      // >
-      //   <Item dept={dept} onClick={() => handleArrowClick(menuName)}>
-      //     <div style={{ display: "flex", alignItems: "center" }}>
-      //       {data?.submenu ? <IconSub isToggle={isToggle} /> : null}
-      //       <FontAwesomeIcon icon={data.icon} style={{ marginRight: "10px" }} />
-      //     </div>
-      //     <Label>{data.label} </Label>
-      //   </Item>
-      //   {hasSubMenu && data?.submenu ? (
-      //     <SubMenu
-      //       dept={dept}
-      //       data={data.submenu}
-      //       toggle={isToggle ?? false}
-      //       menuIndex={menuIndex}
-      //     />
-      //   ) : null}
-      // </ListItem>
-      <Typography onContextMenu={handleContextMenu}>Menu1</Typography>
+      <ListItem
+        style={{ marginLeft: "12px" }}
+        onContextMenu={handleContextMenu}
+      >
+        <Item dept={dept} onClick={() => handleArrowClick(menuName)}>
+          <div style={{ display: "flex", alignItems: "center" }}>
+            {data?.submenu ? <IconSub isToggle={isToggle} /> : null}
+            <FontAwesomeIcon icon={data.icon} style={{ marginRight: "10px" }} />
+          </div>
+          <Label>{data.label} </Label>
+        </Item>
+        {hasSubMenu && data?.submenu ? (
+          <SubMenu
+            dept={dept}
+            data={data.submenu}
+            toggle={isToggle ?? false}
+            menuIndex={menuIndex}
+          />
+        ) : null}
+      </ListItem>
     );
   };
 
@@ -147,14 +145,15 @@ const MultiCatagory: React.FC<MultiProps> = (props) => {
           const isSubMenu = menu.submenu ? true : false;
 
           return (
-            <ListMenu
-              dept={dept}
-              data={menu}
-              hasSubMenu={isSubMenu}
-              menuName={menuName}
-              key={menuName}
-              menuIndex={index}
-            />
+            // <ListMenu
+            //   dept={dept}
+            //   data={menu}
+            //   hasSubMenu={isSubMenu}
+            //   menuName={menuName}
+            //   key={menuName}
+            //   menuIndex={index}
+            // />
+            <Typography  onContextMenu={handleContextMenu}>adaad</Typography>
           );
         })}
       </Box>
@@ -163,7 +162,7 @@ const MultiCatagory: React.FC<MultiProps> = (props) => {
 
   return (
     <>
-      <Box>
+      <List>
         {menus.map((menu, index) => {
           const dept = 1;
           const menuName = `sidebar-menu-${dept}-${index}`;
@@ -179,13 +178,11 @@ const MultiCatagory: React.FC<MultiProps> = (props) => {
                 key={menuName}
                 menuIndex={index}
               />
-              <Typography onContextMenu={handleContextMenu}>
-                Menu Typ
-              </Typography>
+              {/* <Typography  onContextMenu={handleContextMenu}>adaad</Typography> */}
             </>
           );
         })}
-      </Box>
+      </List>
       {open && (
         <Menu
           anchorEl={anchorEl}

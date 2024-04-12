@@ -1,23 +1,12 @@
 import { NavItem, StepTab } from "@/component";
 import { listCatalog } from "@/constants/lists/list";
 import { Box, Grid } from "@mui/material";
-import { useParams } from "react-router-dom";
+import { Outlet, useParams } from "react-router-dom";
 import TestSystem from "./TestSystem/TestSystem";
 import Module from "./Module/Module";
 
 const Catalog = () => {
-  const params = useParams();
 
-  const DataItem = () => {
-    switch (params.key) {
-      case "test-system":
-        return <TestSystem />;
-      case "module":
-        return <Module />;
-      default:
-        return;
-    }
-  };
 
   return (
     <>
@@ -29,7 +18,7 @@ const Catalog = () => {
           <Box sx={{ padding: "25px 0px" }}>
             <StepTab title="Catalog" listItem={listCatalog} />
             <Box sx={{ padding: "10px 55px 0px" }}>
-              <DataItem />
+            <Outlet />
             </Box>
           </Box>
         </Grid>
