@@ -85,3 +85,66 @@ const deleteMenuItem = (id, currentMenus) => {
     }
   };
 
+// Hàm lọc các item là object và các category con chứa object
+function filterMenu(menus) {
+  // Hàm đệ quy để lọc các phần tử và submenu của chúng
+  function filterItems(items) {
+    return items.reduce((filtered, item) => {
+      // Kiểm tra nếu phần tử thỏa mãn điều kiện hasCategory là false
+      const meetsCondition = !item.hasCategory;
+
+      // Nếu phần tử có submenu, áp dụng hàm lọc đệ quy cho submenu
+      let filteredSubmenu = [];
+      if (item.subMenu || item.submenu) {
+        filteredSubmenu = filterItems(item.subMenu || item.submenu);
+      }
+
+      // Nếu phần tử thỏa mãn điều kiện hoặc sau khi lọc, submenu còn phần tử
+      if (meetsCondition || filteredSubmenu.length > 0) {
+        // Tạo một bản sao của phần tử với submenu đã được lọc
+        const newItem = { ...item };
+        if (item.subMenu) newItem.subMenu = filteredSubmenu;
+        if (item.submenu) newItem.submenu = filteredSubmenu;
+
+        // Thêm phần tử vào mảng kết quả
+        filtered.push(newItem);
+      }
+
+      return filtered;
+    }, []);
+  }
+
+  // Bắt đầu lọc từ mảng menu cấp ngoài cùng
+  return filterItems(menus);
+}
+
+// Hàm lọc ra danh sách menu 
+const filterMenus = (menus) => {
+  return menus.reduce((acc, item) => {
+    // Check if the current menu item has hasCategory true
+    if (item.hasCategory) {
+      // Create a new object to avoid mutating the original
+      const newItem = { ...item };
+
+      // Recursively filter the submenu, if it exists
+      if (newItem.subMenu || newItem.submenu) {
+        newItem.subMenu = filterMenus(newItem.subMenu || newItem.submenu);
+      }
+      acc.push(newItem);
+    }
+    return acc;
+  }, []);
+};
+
+// Hàm để lấy danh sách của tất cả id
+function generateIds(menuArray) {
+  const ids = [];
+  menuArray.forEach((item) => {
+    const id = item.id;
+    ids.push(id);
+    if (item.subMenu || item.submenu) {
+      ids.push(...generateIds(item.subMenu || item.submenu));
+    }
+  });
+  return ids;
+}
