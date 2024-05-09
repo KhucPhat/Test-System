@@ -89,6 +89,16 @@ const MultiCatagory: React.FC<MultiProps> = (props) => {
     setAnchorEl(event.currentTarget);
   };
 
+  function countVisibleChildren(menu, activeMenus) {
+    if (!menu.submenu || !activeMenus.includes(menu.label)) {
+        return 0;
+    }
+    return menu.submenu.reduce((total, sub) => {
+        return total + 1 + countVisibleChildren(sub, activeMenus);
+    }, 0);
+}
+
+
   const IconSub: React.FC<IconProps> = ({ isToggle }) => {
     return (
       <FontAwesomeIcon

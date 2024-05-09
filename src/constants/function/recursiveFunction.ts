@@ -147,4 +147,63 @@ function generateIds(menuArray) {
     }
   });
   return ids;
+};
+
+// Hàm đệ quy tìm item 
+function findMenuItemById(menuItems, id) {
+  for (let item of menuItems) {
+    if (item.id === id) {
+      return item;
+    }
+    if (item.subMenu) {
+      const found = findMenuItemById(item.subMenu, id);
+      if (found) return found;
+    }
+  }
+  return null; // Return null if no item is found
+}
+
+// Hàm parse Json
+function parseJsonToKeyValueArray(jsonString, filterEmptyObjects = false) {
+  try {
+    // Parse JSON string to JavaScript object
+    const jsonObject = JSON.parse(jsonString);
+
+    // Initialize the output array and a counter for the id
+    const keyValueArray = [];
+    let idCounter = 1;
+
+    // Helper function to process an object
+    function processObject(obj, prefix = '') {
+      for (const [key, value] of Object.entries(obj)) {
+        const fullKey = prefix ? `${prefix}.${key}` : key;
+        if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+          if (Object.keys(value).length === 0) {
+            if (!filterEmptyObjects) {
+              keyValueArray.push({ id: idCounter++, name: fullKey, value: '{}' });
+            }
+          } else {
+            processObject(value, fullKey);
+          }
+        } else {
+          keyValueArray.push({ id: idCounter++, name: fullKey, value: JSON.stringify(value) });
+        }
+      }
+    }
+
+    // Determine if the jsonObject is an array or a single object
+    if (Array.isArray(jsonObject)) {
+      jsonObject.forEach(item => processObject(item));
+    } else if (typeof jsonObject === 'object' && jsonObject !== null) {
+      processObject(jsonObject);
+    } else {
+      // Handle primitive types or nulls
+      keyValueArray.push({ id: idCounter++, name: 'value', value: JSON.stringify(jsonObject) });
+    }
+
+    return keyValueArray;
+  } catch (error) {
+    console.error('Failed to parse JSON:', error);
+    return []; // Return an empty array in case of error
+  }
 }

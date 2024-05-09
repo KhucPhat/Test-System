@@ -1,6 +1,6 @@
 import Test from "@/Test/Test";
 import MainLayout from "@/layout/MainLayout";
-import { AddNewTest, Catalog, Definition, Execution, Home, TestCase, TestSystem } from "@/pages";
+import { AddNewTest, Catalog, Definition, Execution, Home, Module, TestCase, TestSystem } from "@/pages";
 import { Route, Routes, createBrowserRouter } from "react-router-dom";
 
 // const RoutesApp = () => {
@@ -57,6 +57,10 @@ export const router = createBrowserRouter([
             path: 'item/:id',
             Component: TestSystem,
           },
+          {
+            path: 'module',
+            Component: Module
+          }
         ],
       },
       { path: "definition/:key", Component: Definition  },
