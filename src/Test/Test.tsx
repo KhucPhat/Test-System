@@ -10,6 +10,14 @@ import {
   Paper,
   Autocomplete,
 } from "@mui/material";
+import SortedList from "./TestListParameters";
+import DisplayComponent from "./TestShowDataFunction";
+import TestMove from "./TestMoveUpMoveDown";
+import CustomOutlinedInput from "./TestOnContextInput";
+import ListInput from "./TestTableChangeInput";
+import IndexInputs from "./TestTableChangeInput";
+import ParameterInputs from "./TestShowDataFunction";
+import EditableInputs from "./TestTableChangeInput";
 
 const initialRows = [
   {
@@ -77,64 +85,7 @@ function Test() {
   };
 
   return (
-    <TableContainer component={Paper}>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>ID</TableCell>
-            <TableCell>Name</TableCell>
-            <TableCell>Age</TableCell>
-            <TableCell>Data Type</TableCell>
-            <TableCell>Suggest Body</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {rows.map((row) => (
-            <TableRow key={row.id}>
-              <TableCell>{row.id}</TableCell>
-              <TableCell>
-                <TextField
-                  value={row.name}
-                  onChange={(e) => handleChange(row.id, "name", e.target.value)}
-                  size="small"
-                />
-              </TableCell>
-              <TableCell>
-                <Autocomplete
-                  options={ageOptions}
-                  value={row.age}
-                  onChange={(event, newValue) => {
-                    handleChange(row.id, "age", newValue);
-                  }}
-                  renderInput={(params) => <TextField {...params} />}
-                  size="small"
-                />
-              </TableCell>
-              <TableCell>
-                <Autocomplete
-                  options={dataTypeOptions}
-                  value={row.dataType}
-                  onChange={(event, newValue) => {
-                    handleChange(row.id, "dataType", newValue);
-                  }}
-                  renderInput={(params) => <TextField {...params} />}
-                  size="small"
-                />
-              </TableCell>
-              <TableCell>
-                <TextField
-                  value={row.suggestBody}
-                  onChange={(e) =>
-                    handleChange(row.id, "suggestBody", e.target.value)
-                  }
-                  size="small"
-                />
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+    <EditableInputs />
   );
 }
 
