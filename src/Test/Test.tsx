@@ -1,23 +1,5 @@
-import React, { useState } from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TextField,
-  Paper,
-  Autocomplete,
-} from "@mui/material";
+import { useState } from "react";
 import SortedList from "./TestListParameters";
-import DisplayComponent from "./TestShowDataFunction";
-import TestMove from "./TestMoveUpMoveDown";
-import CustomOutlinedInput from "./TestOnContextInput";
-import ListInput from "./TestTableChangeInput";
-import IndexInputs from "./TestTableChangeInput";
-import ParameterInputs from "./TestShowDataFunction";
-import EditableInputs from "./TestTableChangeInput";
 
 const initialRows = [
   {
@@ -84,9 +66,7 @@ function Test() {
     setRows(newRows);
   };
 
-  return (
-    <EditableInputs />
-  );
+  return <SortedList />;
 }
 
 export default Test;

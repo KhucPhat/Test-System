@@ -1,32 +1,63 @@
 import React, { useState, useEffect } from 'react';
 
-const dataList = [
-  {
-    name: "Get global",
-    parameter: [
-      { test: 'ob', name: 'system', baseIndex: 0, func: "Get global", value: '' },
-      { pri: 'Long', name: 'Bal', baseIndex: 1, func: "Get global", value: '' }
-    ],
-    type: 'left'
-  },
-  {
-    name: "Get global2",
-    parameter: [
-      { test: 'ob2', name: 'system2', baseIndex: 0, func: "Get global2", value: ''  },
-      { test: 'ob23', name: 'system23', baseIndex: 1, func: "Get global2", value: ''  },
-      { pri: 'Long2', name: 'Bal2', baseIndex: 2, func: "Get global2", value: ''  }
-    ],
-    type: 'right'
-  },
-  {
-    name: "Get global",
-    parameter: [
-      { test: 'ob', name: 'system', baseIndex: 0, func: "Get global", value: '' },
-      { pri: 'Long', name: 'Bal', baseIndex: 1, func: "Get global", value: '' }
-    ],
-    type: 'right'
-  },
+const dataList = [{
+  name: 'getDeltaX',
+  parameter: [
+    {
+      testSystemObject: 'Subscriber',
+      primitiveType: null,
+      name: 'subcriber',
+      desc: 'Subscriber chứa balance cần lấy',
+    },
+    {
+      testSystemObject: null,
+      primitiveType: 'Long',
+      name: 'balType',
+      desc: 'Loại tài khoản cần lấy'
+    }
+  ]
+},
+{
+  name: 'getDeltaAvaiableAmountOfBal'
+  parameter: [
+    {
+      testSystemObject: 'Subscriber',
+      primitiveType: null,
+      name: 'subcriber',
+      desc: 'Subscriber chứa balance cần lấy'
+    },
+    {
+      testSystemObject: 'Subscriber',
+      primitiveType: null,
+      name: 'newSubcriber',
+      desc: 'Subscriber chứa balance cần lấy'
+    },
+    {
+      testSystemObject: null,
+      primitiveType: 'Long',
+      name: 'balType',
+      desc: 'Loại tài khoản cần lấy'
+    }
+  ]
+}
 ];
+
+const comparatorDefinition= [
+  {
+    id: 1,
+    left: "getDeltaAvaiableAmountOfBal(#1,#2,@balType)",
+    right: "getDeltaX(#1,@alType)",
+    oragenor: 1,
+    name: 'đaaddd'
+  },
+  {
+    id: 2,
+    left: "getDeltaAvaiableAmountOfBal(#1,#2,@balType),getDeltaX(#1,@alType)",
+    right: "getDeltaX(#1,@alType)",
+    oragenor: 1,
+    name: 'đaaddd'
+  }
+]
 
 const allParameters = [
   { test: 'ob', name: 'system', func: "Get global" },
@@ -37,6 +68,8 @@ const allParameters = [
   { test: 'ob23', name: 'system23', func: "Get global2" },
   { pri: 'Long2', name: 'Bal2', func: "Get global2" }
 ];
+
+
 
 
 // for (const data of dataList) {
@@ -81,6 +114,41 @@ function SortedList() {
 const updatedDataList = updateDataList(dataList, allParameters);
 console.log(updatedDataList);
 
+// Hàm phân tích cú pháp và lấy thông tin chi tiết
+function getFunctionDetails(functionString) {
+  const details = functionString.match(/(\w+)\(([^)]+)\)/);
+  if (!details) return null;
+
+  const functionName = details[1];
+  const args = details[2].split(',').map(arg => arg.trim().replace(/^[@#]/, ''));
+
+  // Tìm kiếm trong dataList
+  const functionData = dataList.find(d => d.name === functionName);
+  if (!functionData) return null;
+
+  // Lấy thông tin chi tiết từng tham số
+  const parameters = functionData.parameter.map(param => {
+    const isArgument = args.includes(param.name);
+    return isArgument ? `${param.name} (${param.desc})` : '';
+  }).filter(Boolean);
+
+  return `${functionName}(${parameters.join(', ')})`;
+}
+
+// Tạo mảng mới
+const enrichedComparisons = comparatorDefinition.map(comp => {
+  const leftDetails = comp.left.split(',').map(getFunctionDetails).filter(Boolean);
+  const rightDetails = getFunctionDetails(comp.right);
+
+  return {
+    ...comp,
+    left: leftDetails.join(', '),
+    right: rightDetails
+  };
+});
+
+console.log(enrichedComparisons);
+
 
 // Sử dụng hàm với dữ liệu dataList và allParameters
 updateDataList(dataList, allParameters);
@@ -106,9 +174,6 @@ const newParameters = allParameters.map(param => {
   const key = `${param.func}-${param.name}`;
   return { ...param, value: valueMap.get(key) };
 });
-
-console.log(newParameters);
-
 
   return (
     <div>
