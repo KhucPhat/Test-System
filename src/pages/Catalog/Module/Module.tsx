@@ -9,6 +9,7 @@ import {
   faTrashCan,
 } from "@fortawesome/free-solid-svg-icons";
 import { styled } from "@mui/system";
+import { copyAndSort } from "@/constants/function/recursiveFunction";
 
 const BoxCustom = styled(Box)(() => ({
   marginTop: "40px",
@@ -112,11 +113,21 @@ const Module = () => {
           hasCategory: false
         },
         {
+          label: "Object 1",
+          icon: faFile,
+          hasCategory: false
+        },
+        {
           label: "Object 1,3",
           icon: faFile,
           hasCategory: false
         },
       ]
+    },
+    {
+      label: "Object 3",
+      icon: faFile,
+      hasCategory: false
     },
     {
       label: "Catagory 2",
@@ -127,6 +138,11 @@ const Module = () => {
           label: "Sub Catagory 1",
           icon: faFile,
           hasCategory: true,
+        },
+        {
+          label: "Object 8",
+          icon: faFile,
+          hasCategory: false
         },
         {
           label: "Sub Catagory 2",
@@ -223,6 +239,9 @@ const Module = () => {
       hasCategory: false
     },
   ];
+
+  const sortedMenus = copyAndSort(menus);
+console.log(sortedMenus);
 
   return (
     <div>
