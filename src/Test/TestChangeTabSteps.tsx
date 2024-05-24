@@ -72,3 +72,27 @@ const updatedData = dataTabSteps.map(tabStep => deepCopyUpdate(tabStep, updates)
 
 // Log the updated structure to verify the changes
 console.log(updatedData);
+
+// Hàm đệ quy tìm kiếm parentId để thêm phần tử con
+function addTabToChildTabsWithoutMutation(originalData, tabIdToAdd, newTab) {
+    // Create a deep copy of the original data to avoid direct mutation
+    const newData = JSON.parse(JSON.stringify(originalData));
+
+    function recurseAndUpdate(data) {
+        data.forEach(item => {
+            if (item.tabId === tabIdToAdd) {
+                // When the correct tab is found, add the new tab to childTabs
+                item.childTabs.push(newTab);
+            }
+            if (item.childTabs) {
+                recurseAndUpdate(item.childTabs);
+            }
+        });
+    }
+
+    // Start the recursive update process
+    recurseAndUpdate(newData);
+    return newData;
+}
+
+const updatedData = addTabToChildTabsWithoutMutation(dataTabSteps, 4, newChildTab);
