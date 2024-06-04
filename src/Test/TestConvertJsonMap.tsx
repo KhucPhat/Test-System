@@ -37,6 +37,7 @@ function extractKeyValuePairs(obj, result) {
     }
 }
 
+const exampleJson = '{"key1":{"attr1":"Ab","attr2":2,"attr3":true,"attr4":{"key2":{"attr23":"Ab1","attr231":22,"attr1313":true,"attri32":"{\\"key1\\":{\\"attr1\\":\\"Ab\\",\\"attr2\\":2,\\"attr3\\":true,\\"attr4\\":{\\"key2\\":{\\"attr23\\":\\"Ab1\\",\\"attr231\\":22,\\"attr1313\\":true}}}}"}}}}';
 const keyValueArray = processJsonString(exampleJson);
 console.log(keyValueArray);
 
