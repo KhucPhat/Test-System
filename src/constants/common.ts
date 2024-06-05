@@ -30,28 +30,6 @@ const extractBeforeParentheses = (input) => {
     return filteredObjects;
   }
   
-  // Mảng đối tượng A
-  const arrayA = [{ name: "getaadad" }, { name: "getaadad1" }];
-  
-  // Mảng chuỗi B
-  const arrayB = ["getaadad", "getaadad1", "getaadad2"];
-  
-  // Lọc và hiển thị kết quả
-  const filteredObjects = filterObjectsFromArray(arrayA, arrayB);
-  console.log("Các đối tượng từ mảng A có thuộc tính name giống với các giá trị trong mảng B:", filteredObjects);
-  
-
-  // Mảng ban đầu
-const initialArray = [
-    { id: 1, left: 'getaadad(ad,adad,3)', right: 'getaadad1(ad,adad,2)' },
-    { id: 2, left: 'getaadad2(ad,adad,4)', right: 'getaadad3(ad,adad,5)' }
-  ];
-  
-  // Mảng giá trị mặc định
-  const defaultValues = [
-    { name: 'getaadad', parameter: 'a' },
-    { name: 'getaadad1', parameter: 'av' }
-  ];
   
   // Hàm để cập nhật giá trị của left và right trong mảng ban đầu
   function updateArrayWithDefaultValues(initialArray, defaultValues) {
@@ -68,10 +46,26 @@ const initialArray = [
       };
     });
   }
-  
-  // Cập nhật mảng ban đầu với giá trị mặc định
-  const updatedArray = updateArrayWithDefaultValues(initialArray, defaultValues);
-  
-  // Hiển thị kết quả
-  console.log(updatedArray);
+
+  // Hàm lấy name trước dấu ()
+ export const extractFunctionNames = (expression) => {
+    const regex = /([a-zA-Z0-9_]+)\(/g;
+    let match;
+    let functionNames = [];
+    while ((match = regex.exec(expression)) !== null) {
+      functionNames.push(match[1]);
+    }
+    return functionNames;
+  };
+
+  // Hàm lấy giá trị trước dấu ()
+ export const extractValuesFromExpression = (expression) => {
+    const regex = /\((.*?)\)/g;
+    let match;
+    let values = [];
+    while ((match = regex.exec(expression)) !== null) {
+      values.push(...match[1].split(',').map(value => value.trim()));
+    }
+    return values;
+  };
   

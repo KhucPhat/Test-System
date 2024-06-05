@@ -206,4 +206,29 @@ function parseJsonToKeyValueArray(jsonString, filterEmptyObjects = false) {
     console.error('Failed to parse JSON:', error);
     return []; // Return an empty array in case of error
   }
+};
+
+export const copyAndSort = (menu) => {
+  // Copy the array to avoid modifying the original array
+  const copiedMenu = JSON.parse(JSON.stringify(menu));
+
+  // Recursive function to sort based on the 'hasCategory' property
+  function sortByHasCategory(menu) {
+    menu.sort((a, b) => (b.hasCategory === a.hasCategory ? 0 : b.hasCategory ? 1 : -1));
+
+    // Recursively sort any submenus
+    menu.forEach(item => {
+      if (item.subMenu) {
+        sortByHasCategory(item.subMenu);
+      } else if (item.submenu) {
+        sortByHasCategory(item.submenu);
+      }
+    });
+  }
+
+  // Start sorting from the copied root array
+  sortByHasCategory(copiedMenu);
+
+  // Return the sorted array
+  return copiedMenu;
 }
