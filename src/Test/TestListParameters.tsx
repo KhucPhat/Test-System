@@ -1,6 +1,22 @@
 import { extractFunctionNames } from '@/constants/common';
 import React, { useState, useEffect } from 'react';
 
+const comparatorDefinition= [
+  {
+    id: 1,
+    left: "getDeltaAvaiableAmountOfBal(#1,#2,@balType)",
+    right: "getDeltaX(#1,@alType)",
+    oragenor: 1,
+    name: 'đaaddd'
+  },
+  {
+    id: 2,
+    left: "getDeltaAvaiableAmountOfBal(#1,#2,@balType),getDeltaX(#1,@alType)",
+    right: "getDeltaX(#1,@alType)",
+    oragenor: 1,
+    name: 'đaaddd'
+  }
+]
 
 const allParameters = [
   { test: 'ob', name: 'system', func: "Get global" },
@@ -30,50 +46,75 @@ const allParameters = [
 
 function SortedList() {
 
-  const dataList = [
-    {
-      name: 'getDeltaX',
-      parameter: [
-        {
-          testSystemObject: 'Subscriber',
-          primitiveType: null,
-          name: 'subcriber',
-          desc: 'Subscriber chứa balance cần lấy',
-          value: "#1", parentId: 1
-        },
-        {
-          testSystemObject: null,
-          primitiveType: 'Long',
-          name: 'balType',
-          desc: 'Loại tài khoản cần lấy'
-        }
-      ]
-    },
-    {
-      name: 'getDeltaAvaiableAmountOfBal',
-      parameter: [
-        {
-          testSystemObject: 'Subscriber',
-          primitiveType: null,
-          name: 'subcriber',
-          desc: 'Subscriber chứa balance cần lấy',
-          value: "#2", parentId: 1
-        },
-        {
-          testSystemObject: 'Subscriber',
-          primitiveType: null,
-          name: 'newSubcriber',
-          desc: 'Subscriber chứa balance cần lấy',
-          value: "#3", parentId: 1
-        },
-        {
-          testSystemObject: null,
-          primitiveType: 'Long',
-          name: 'balType',
-          desc: 'Loại tài khoản cần lấy',
-          value: "@balType", parentId: 1
-        }
-      ]
+            // Nếu tìm thấy, trả về một bản sao của param đã cập nhật
+            if (matchingParam) {
+                return {...param, value: matchingParam.value};
+            }
+            
+            // Nếu không tìm thấy, trả về bản sao của param không thay đổi
+            return {...param};
+        })};
+
+        return newData;
+    });
+
+    return newDataList;
+}
+
+// Sử dụng hàm này để cập nhật dataList với allParameters
+const updatedDataList = updateDataList(dataList, allParameters);
+console.log(updatedDataList);
+
+// Hàm phân tích cú pháp và lấy thông tin chi tiết
+function getFunctionDetails(functionString) {
+  const details = functionString.match(/(\w+)\(([^)]+)\)/);
+  if (!details) return null;
+
+  const functionName = details[1];
+  const args = details[2].split(',').map(arg => arg.trim().replace(/^[@#]/, ''));
+
+  // Tìm kiếm trong dataList
+  const functionData = dataList.find(d => d.name === functionName);
+  if (!functionData) return null;
+
+  // Lấy thông tin chi tiết từng tham số
+  const parameters = functionData.parameter.map(param => {
+    const isArgument = args.includes(param.name);
+    return isArgument ? `${param.name} (${param.desc})` : '';
+  }).filter(Boolean);
+
+  return `${functionName}(${parameters.join(', ')})`;
+}
+
+// Tạo mảng mới
+const enrichedComparisons = comparatorDefinition.map(comp => {
+  const leftDetails = comp.left.split(',').map(getFunctionDetails).filter(Boolean);
+  const rightDetails = getFunctionDetails(comp.right);
+
+  return {
+    ...comp,
+    left: leftDetails.join(', '),
+    right: rightDetails
+  };
+});
+
+console.log(enrichedComparisons);
+
+
+// Sử dụng hàm với dữ liệu dataList và allParameters
+updateDataList(dataList, allParameters);
+
+const valueMap = new Map();
+
+allParameters.forEach((param, index) => {
+  const key = `${param.func}-${param.name}`;
+  if (param.test) {
+    if (!valueMap.has(key)) {
+      // Count how many unique `test` types have been seen for each `func`
+      const funcTestCount = Array.from(valueMap.values())
+        .filter(value => value.startsWith('#') && value.includes(param.func))
+        .length + 1;
+      valueMap.set(key, `#${funcTestCount}`);
     }
   ];
   

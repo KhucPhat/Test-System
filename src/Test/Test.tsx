@@ -1,5 +1,6 @@
 import { useState } from "react";
 import SortedList from "./TestListParameters";
+<<<<<<< HEAD
 import CustomOutlinedInput from "./TestOnContextInput";
 import MyTable from "./TestTable";
 import { SpecialInput } from "./TestChangeParameter";
@@ -9,6 +10,8 @@ import { Module } from "@/pages";
 import MyAutocompleteComponent from "./TestBlurAutocomplete";
 import MyAutocomplete from "./TestBlurAutocomplete";
 import TestTabStepsTree from "./TestChangeListSteps";
+=======
+>>>>>>> refs/remotes/origin/main
 
 const initialRows = [
   {
