@@ -20,9 +20,9 @@ export default function MainLayout() {
           </Grid>
         </Grid>
       </section>
-      <footer>
+      {/* <footer>
         <Footer />
-      </footer>
+      </footer> */}
     </div>
   );
 }
