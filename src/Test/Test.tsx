@@ -1,85 +1,138 @@
-import { useState } from "react";
-import SortedList from "./TestListParameters";
-<<<<<<< HEAD
-import CustomOutlinedInput from "./TestOnContextInput";
-import MyTable from "./TestTable";
-import { SpecialInput } from "./TestChangeParameter";
-import SelectableParagraph from "./TestSelectNewText";
-import ScrollableGrid from "./TestScrollGrid";
-import { Module } from "@/pages";
-import MyAutocompleteComponent from "./TestBlurAutocomplete";
-import MyAutocomplete from "./TestBlurAutocomplete";
-import TestTabStepsTree from "./TestChangeListSteps";
-=======
->>>>>>> refs/remotes/origin/main
-
-const initialRows = [
-  {
-    id: 1,
-    name: "Alice",
-    age: 24,
-    dataType: "String",
-    suggestBody: "Sample text",
-  },
-  { id: 2, name: "Bob", age: 30, dataType: "Boolean", suggestBody: "true" },
-  { id: 3, name: "Charlie", age: 22, dataType: "Long", suggestBody: "1000" },
-];
-
-const ageOptions = [18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30];
-const dataTypeOptions = ["Long", "Float", "Boolean", "DateTime", "String"];
-const sampleValues = {
-  Long: "1000",
-  Float: "10.5",
-  Boolean: "true",
-  DateTime: "2024-01-01T12:00:00",
-  String: "Sample text",
-};
-
-function validateValue(dataType, value) {
-  switch (dataType) {
-    case "Long":
-    case "Float":
-      if (!/^\d+(\.\d+)?$/.test(value)) {
-        return "Must be a numeric value";
-      }
-      break;
-    case "Boolean":
-      if (!/^(true|false)$/i.test(value)) {
-        return "Must be true or false";
-      }
-      break;
-    case "DateTime":
-      if (isNaN(new Date(value).getTime())) {
-        return "Must be a valid date-time format";
-      }
-      break;
-    case "String":
-      // For string, assume all input is valid
-      break;
-    default:
-      return "Invalid data type";
-  }
-  return "";
-}
+import JsonDisplay from "./TestConvertJsonMap";
+import StyledJsonDisplay from "./TestConvertJsonMap";
 
 function Test() {
-  const [rows, setRows] = useState(initialRows);
+  const jsonMapString = `{
+    "attrString": "a",
+    "attrFloat": 0.3,
+    "attrDate": "2024-12-20 12:20:10",
+    "attList": "[1,2]",
+    "attrSingleObject": {
+       "string": ["a", "b"],
+       "long": 2133
+    },
+    "attrSingleOfList": [
+       {
+          "string": ["a", "b"],
+          "long": 2133,
+          "attrMap": {
+             "map0_1": {
+                "attr1": "Ab",
+                "attr2": 2,
+                "attr3": [0, 1],
+                "attr4": {
+                   "Ab1": {
+                      "attr23": "Ab1",
+                      "attr231": 22,
+                      "attr1313": true,
+                      "attri32": "2024-12-20 12:40:13"
+                   }
+                }
+             }
+          }
+       }
+    ],
+    "map": {
+       "map0_1": {
+          "attr1": "Ab",
+          "attr2": 2,
+          "attr3": [0, 1],
+          "attr4": {
+             "Ab1": {
+                "attr23": "Ab1",
+                "attr231": 22,
+                "attr1313": true,
+                "attri32": "2024-12-20 12:40:13"
+             }
+          }
+       },
+       "map1": {
+          "false": {
+             "attr12": "Abc",
+             "attr23": 23,
+             "attr33": false,
+             "attr43": {
+                "true": {
+                   "attr2312": "Ab1",
+                   "attr23146": 22,
+                   "attr131375": true,
+                   "attri32123": "2024-12-20 12:40:13"
+                }
+             },
+             "attrMapofMap": {
+                "22": {
+                   "type1": "Ab1",
+                   "type2": 22,
+                   "attr131375": true,
+                   "attri32123": "2024-12-20 12:40:13"
+                }
+             }
+          }
+       },
+       "map3": {
+          "Abc": {
+             "attr12": "Abc",
+             "attr23": 23,
+             "attr33": false,
+             "attr43": {
+                "dateKey": {
+                   "attr2312": "Ab1",
+                   "attr23146": 22,
+                   "attr131375": true,
+                   "attri32123": "2024-12-20 12:40:13"
+                }
+             },
+             "attrMapofMap": {
+                "true": {
+                   "type1": "Ab1",
+                   "type2": 22,
+                   "attr131375": true,
+                   "attri32123": {
+                      "arrayAB": {
+                         "bal1": ["a", "b"],
+                         "bal2": 1234000,
+                         "bal3": 0.3344,
+                         "bal4": {
+                            "0.321": {
+                               "typq1": 0.321,
+                               "type2": 4234,
+                               "typ3": true,
+                               "type4": [true, false]
+                            }
+                         }
+                      }
+                   }
+                }
+             }
+          }
+       }
+    }
+ }
+ `;
 
-  const handleChange = (id, field, value) => {
-    const newRows = rows.map((row) => {
-      if (row.id === id) {
-        if (field === "dataType") {
-          return { ...row, dataType: value, suggestBody: sampleValues[value] };
-        }
-        return { ...row, [field]: value };
-      }
-      return row;
-    });
-    setRows(newRows);
-  };
+ const jsonArray = `[
+0,1
+  ]`;
+
+  const jsonObject = `{
+    "attr1": [2020, 2022],
+    "attr2": 23,
+    "attr3": "ab"
+    }`;
+
+  const jsonObjectArray = `
+  [
+    {
+    "attrLong": 12,
+    "attListLong": [23,23],
+    "attriSingle": "A",
+    "attriListSingle": ["a", "b"]
+    }
+  ]
+  `
 
   return (
-    <TestTabStepsTree />
+    <JsonDisplay jsonData={jsonMapString} />
   );
 }
 
