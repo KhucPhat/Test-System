@@ -20,38 +20,45 @@ function getValuesFromArray(array, data) {
   }).filter(item => item !== undefined); // Lọc bỏ các giá trị undefined
 }
 
-// Sử dụng hàm
-const valuesArray = getValuesFromArray(array, data);
-console.log(valuesArray);
 const items = [
   { id: 1, name: "Item1", value: 10, des: "Description1" },
   { id: 1, name: "Item1", value: 20, des: "Description1" },
   { id: 1, name: "Item1", value: 10, des: "Description2" },
-  { id: 2, name: "Item2", value: 30, des: "Description4" },
+  { id: 2, name: "Item1", value: 30, des: "Description4" }, // Trùng name, khác id
   { id: 3, name: "Item3", value: 40, des: "Description5" }
 ];
 
-function hasDuplicatesWithDifferentValueAndDes(array) {
-  // Sử dụng map để lưu trữ các nhóm dựa trên id và name
-  const map = new Map();
+function hasDuplicatesWithDifferentIdOrValueAndDes(array) {
+  const nameMap = new Map();
+  const detailedMap = new Map();
 
   for (const item of array) {
-    // Tạo khóa dựa trên id và name
-    const key = `${item.id}-${item.name}`;
-    if (map.has(key)) {
-      // Nếu key đã tồn tại, kiểm tra các đối tượng đã lưu có khác value hoặc des không
-      const entries = map.get(key);
+    const nameKey = item.name;
+    const detailedKey = `${item.id}-${item.name}`;
+
+    // Kiểm tra các đối tượng có cùng name nhưng khác id
+    if (nameMap.has(nameKey)) {
+      const otherId = nameMap.get(nameKey);
+      if (otherId !== item.id) {
+        return true; // Tìm thấy đối tượng có cùng name nhưng khác id
+      }
+    } else {
+      nameMap.set(nameKey, item.id);
+    }
+
+    // Kiểm tra các đối tượng có cùng id và name nhưng khác value hoặc des
+    if (detailedMap.has(detailedKey)) {
+      const entries = detailedMap.get(detailedKey);
       if (entries.some(entry => entry.value !== item.value || entry.des !== item.des)) {
-        return true;
+        return true; // Tìm thấy đối tượng có cùng id và name nhưng khác value hoặc des
       }
       entries.push(item);
     } else {
-      // Nếu key chưa tồn tại, thêm mới vào map
-      map.set(key, [item]);
+      detailedMap.set(detailedKey, [item]);
     }
   }
   return false;
 }
 
-const result = hasDuplicatesWithDifferentValueAndDes(items);
+const result = hasDuplicatesWithDifferentIdOrValueAndDes(items);
 console.log(result); // Output: true hoặc false
