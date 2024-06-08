@@ -1,138 +1,136 @@
-import React from "react";
+import { Button, Snackbar, Typography } from "@mui/material";
+import React, { useState } from "react";
+import JSONFormatter from "./TestConvertJsonMap";
+import MuiAlert from "@mui/material/Alert";
 
-const jsonData = `{
-  attr: "a",
-  attr2: "2024-12-23 23:40:20",
-  attr3: 2,
-  attr4: "[2,3]",
-  attr5: {
-    "attr c": "@56600|AT|ad#",
-    "attr d": [0.1, 0.3],
-    "attr e": [1, 3],
-    "attr f": ["A", "B", "C", "D"],
-  },
-  attr6: [
-    {
-      "attr caa": 1,
-      "attr dad": ["2024-12-23 20:12:34", "2024-12-23 20:12:34"],
-      "attr ev": [1, 3],
-      "attr fv": ["A", "B", "C", "D"],
-    },
-  ],
-  attr7: {
-    "attr c": 0.3,
-    "attr d": [0.1, 0.3],
-    "attr e": [1, 3],
-    "attr f": [
-      {
-        "attr caa": 1,
-        "attr dad": ["2024-12-23 20:12:34", "2024-12-23 20:12:34"],
-        "attr ev": [1, 3],
-        "attr fv": ["A", "B", "C", "D"],
-      },
-    ],
-  },
-  attr8: {
-    "attr c": 0.3,
-    "attr d": [0.1, 0.3],
-    "attr e": [1, 3],
-    attr6: {
-      "attr caa": 1,
-      "attr dad": ["2024-12-23 20:12:34", "2024-12-23 20:12:34"],
-      "attr ev": [1, 3],
-      "attr fv": ["A", "B", "C", "D"],
-    },
-  },
-  attr9: {
-    "0.3": {
-      "attr c": 0.3,
-      "attr d": [0.1, 0.3],
-      "attr e": [1, 3],
-      attr6: {
-        "attr caa": 1,
-        "attr dad": ["2024-12-23 20:12:34", "2024-12-23 20:12:34"],
-        "attr ev": [1, 3],
-        "attr fv": ["A", "B", "C", "D"],
-      },
-    },
-  },
-  attr10: {
-    "[0,1]": {
-      "attr c": "@800044|adr|ad#",
-      "attr d": [0, 1],
-      "attr e": [1, 3],
-      attr9: {
-        "0.3": {
-          "attr c": 0.3,
-          "attr d": [0.1, 0.3],
-          "attr e": [1, 3],
-          attr6: {
-            "attr caa": 1,
-            "attr dad": ["2024-12-23 20:12:34", "2024-12-23 20:12:34"],
-            "attr ev": [1, 3],
-            "attr fv": ["A", "B", "C", "D"],
-          },
-        },
-      },
-    },
-  },
-  attr11: {
-    "attr caa": 1,
-    "attr dad": ["2024-12-23 20:12:34", "2024-12-23 20:12:34"],
-    "attr ev": [1, 3],
-    "attr fv": ["A", "B", "C", "D"],
-    attr10: {
-      "[0,1]": {
-        "attr c": 0.5,
-        "attr d": [0, 1],
-        "attr e": [1, 3],
-        attr9: {
-          "0.3": {
-            "attr c": 0.3,
-            "attr d": [0.1, 0.3],
-            "attr e": [1, 3],
-            attr6: {
-              "attr caa": "@6000|a|f#",
-              "attr dad": ["2024-12-23 20:12:34", "2024-12-23 20:12:34"],
-              "attr ev": [1, 3],
-              "attr fv": ["A", "B", "C", "D"],
-            },
-          },
-        },
-      },
-    },
-  },
-}`;
+const JSONViewer = ({ data }) => {
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "info",
+  });
+  const [listData, setListData] = useState(data);
 
-const JsonDisplay = () => {
-  const formatJson = (value, indent = 0) => {
-    const spacer = " ".repeat(indent); // Creates indentation
-    if (typeof value === "string") {
-      return value.includes("@")
-        ? `<span style={{ color: 'red' }}>${JSON.stringify(value)}</span>`
-        : JSON.stringify(value);
-    } else if (typeof value === "number" || typeof value === "boolean") {
-      return value.toString();
-    } else if (Array.isArray(value)) {
-      const elements = value
-        .map((v) => `${spacer}  ${formatJson(v, indent + 2)}`)
-        .join(",\n");
-      return `[\n${elements}\n${spacer}]`;
-    } else if (typeof value === "object") {
-      const entries = Object.entries(value).map(([key, val]) => {
-        return `${spacer}  "${key}": ${formatJson(val, indent + 2)}`;
+  function convertToJsonAttributeObject(inputObject) {
+    let result = [];
+
+    // Duyệt qua từng thuộc tính ở cấp cao nhất của đối tượng
+    for (const key in inputObject) {
+      // Tạo một đối tượng mới với attrName là key, và value là chuỗi JSON của giá trị
+      result.push({
+        attrName: key,
+        value: JSON.stringify(inputObject[key], null, 2), // Sử dụng JSON.stringify để định dạng chuỗi JSON đẹp mắt
       });
-      return `{\n${entries.join(",\n")}\n${spacer}}`;
+    }
+
+    return result;
+  }
+
+  const handleDownload = () => {
+    const jsonString = `{${listData.map((item) => `"${item.attrName}": ${item.value}`).join(",")}}`;
+    const blob = new Blob([jsonString], { type: "application/json" });
+    const href = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = href;
+    link.download = "exported_data.json";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file && file.type === "application/json") {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const json = JSON.parse(e.target.result);
+          const newData = convertToJsonAttributeObject(json);
+          console.log(newData);
+          // Validate JSON or manipulate it if necessary
+          setListData([...data, ...newData]);
+          setSnackbar({
+            open: true,
+            message: "JSON imported successfully!",
+            severity: "success",
+          });
+        } catch (error) {
+          setSnackbar({
+            open: true,
+            message: "Invalid JSON format!",
+            severity: "error",
+          });
+        }
+      };
+      reader.readAsText(file);
+    } else {
+      setSnackbar({
+        open: true,
+        message: "Please upload a valid JSON file!",
+        severity: "error",
+      });
     }
   };
 
-  const renderedJson = formatJson(jsonData);
+  const handleCloseSnackbar = () => {
+    setSnackbar({ ...snackbar, open: false });
+  };
 
+  console.log(listData);
   return (
-    <div style={{ fontFamily: "monospace", whiteSpace: "pre-wrap" }}>
-      <pre dangerouslySetInnerHTML={{ __html: renderedJson }} />
+    <div>
+      <div
+        style={{
+          margin: "20px",
+          padding: "20px",
+          border: "1px solid #ccc",
+          borderRadius: "5px",
+          overflowX: "auto",
+        }}
+      >
+        {`{`}
+        {listData.map((item, index) => (
+          <div
+            key={index}
+            style={{ marginBottom: "10px", fontFamily: "monospace" }}
+          >
+            <Typography>{`"${item.attrName}":`}</Typography>
+            <JSONFormatter data={JSON.parse(item.value)} />
+            {index < listData.length - 1 ? "," : ""}
+          </div>
+        ))}
+        {`}`}
+      </div>
+      <Button
+        onClick={handleDownload}
+        variant="contained"
+        color="primary"
+        style={{ marginTop: "20px" }}
+      >
+        Export JSON
+      </Button>
+      <input
+        type="file"
+        accept="application/json"
+        onChange={handleFileChange}
+        style={{ marginTop: "20px" }}
+      />
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+      >
+        <MuiAlert
+          elevation={6}
+          variant="filled"
+          onClose={handleCloseSnackbar}
+          severity={snackbar.severity}
+        >
+          {snackbar.message}
+        </MuiAlert>
+      </Snackbar>
     </div>
   );
 };
 
-export default JsonDisplay;
+export default JSONViewer;
