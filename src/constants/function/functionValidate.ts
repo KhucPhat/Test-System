@@ -1,12 +1,13 @@
 function isValidFloat(input) {
     const num = parseFloat(input);
-    // Check if it's a valid number and finite
+    // Check if the parsed number is finite, and the input is not an empty string
     if (!isNaN(num) && isFinite(num) && input.trim() !== "") {
-        // Check if there's a decimal point in the input or a fractional part
-        return input.includes('.') && (num % 1 !== 0 || input.endsWith('.0'));
+        // Ensure the input matches a strict float pattern and consider numbers with a '.0' suffix
+        const floatRegex = /^-?\d+(\.\d+)?$/;
+        return floatRegex.test(input) || (input.includes('.') && input.endsWith('.0'));
     }
     return false;
-};
+}
 
 function validateDateInput(dateString) {
     // Splitting the dateString to manually construct the date to avoid timezone issues
