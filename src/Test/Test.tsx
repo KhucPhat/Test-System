@@ -159,7 +159,7 @@ function Test() {
 
   return (
    //  <StyledJsonDisplay jsonData={jsonMapString} />
-   <ContextValueJson data={JSON.parse(jsonMapString)} />
+   <EditableJSONFormatter data={JSON.parse(jsonMapString)} />
   );
 }
 
