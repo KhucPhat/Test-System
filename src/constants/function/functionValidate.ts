@@ -33,3 +33,17 @@ function validateDateInput(dateString) {
     // Check if the date is valid and within the allowed range
     return date >= minDate && date <= maxDate;
 };
+
+// // globalAccess.ts
+// import store from './store';
+
+// let globalValue: string = '';
+
+// store.subscribe(() => {
+//     const state = store.getState();
+//     globalValue = state.globalValue;
+//     console.log('Updated global value:', globalValue);
+// });
+
+// // This file can now export `globalValue` or use it for other global purposes.
+
