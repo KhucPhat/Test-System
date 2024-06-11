@@ -10,6 +10,12 @@ function isValidFloat(input) {
 }
 
 function validateDateInput(dateString) {
+    // Regex pattern to validate the correct format YYYY-MM-DD HH:MM:SS
+    const regex = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/;
+    if (!regex.test(dateString)) {
+        return false; // Early rejection if format is incorrect
+    }
+
     // Splitting the dateString to manually construct the date to avoid timezone issues
     const parts = dateString.split(/[- :]/);
     const year = parseInt(parts[0], 10);
@@ -19,8 +25,8 @@ function validateDateInput(dateString) {
     const minute = parseInt(parts[4], 10);
     const second = parseInt(parts[5], 10);
 
-    // Early reject for invalid year input
-    if (year < 1001 || year > 9999) {
+    // Early reject for invalid year or invalid month/day values
+    if (year < 1001 || year > 9999 || month < 0 || month > 11 || day < 1 || day > 31) {
         return false;
     }
 
@@ -29,6 +35,11 @@ function validateDateInput(dateString) {
     // Define the minimum and maximum allowable dates in local time
     const minDate = new Date(1001, 0, 1, 0, 0, 0); // 1001-01-01 00:00:00
     const maxDate = new Date(9999, 11, 31, 23, 59, 59); // 9999-12-31 23:59:59
+
+    // Additional checks for the JavaScript date object edge cases
+    if (isNaN(date.getTime())) {
+        return false; // Check if date is not valid (e.g., Feb 30)
+    }
 
     // Check if the date is valid and within the allowed range
     return date >= minDate && date <= maxDate;
