@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-const EditableJSONFormatter = ({ data }) => {
+const ValidateValueChangeJson = ({ data }) => {
   const [jsonData, setJsonData] = useState(data);
 
   function parsePath(path) {
@@ -133,4 +133,4 @@ const EditableJSONFormatter = ({ data }) => {
   );
 };
 
-export default EditableJSONFormatter;
+export default ValidateValueChangeJson;
