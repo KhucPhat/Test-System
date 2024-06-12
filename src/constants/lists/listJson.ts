@@ -15,7 +15,7 @@ export const jsonMapString = `{
              "map0_1": {
                 "attr1": "Ab",
                 "attr2": 2,
-                "attr3": [0, 1],
+                "attr3": ["2023-10-20 12:20:30","2023-10-20 12:20:30"],
                 "attr4": {
                    "Ab1": {
                       "attr23": "Ab1",
