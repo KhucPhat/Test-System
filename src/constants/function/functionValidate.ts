@@ -45,6 +45,13 @@ function validateDateInput(dateString) {
     return date >= minDate && date <= maxDate;
 };
 
+// Hàm check xem có value ! rỗng trong list object không
+function hasNonEmptyValue(obj) {
+  // Sử dụng Object.values() để lấy tất cả các giá trị trong object,
+  // sau đó sử dụng some() để kiểm tra xem có giá trị nào không phải là chuỗi rỗng
+  return Object.values(obj).some(value => value !== '');
+}
+
 // // globalAccess.ts
 // import store from './store';
 
