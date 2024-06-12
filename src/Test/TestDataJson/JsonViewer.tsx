@@ -25,9 +25,20 @@ const JSONViewer = ({ data }) => {
 
     return result;
   }
-
   const handleDownload = () => {
-    const jsonString = `{${listData.map((item) => `"${item.attrName}": ${item.value}`).join(",")}}`;
+    // Parse the value to ensure it's valid JSON and to pretty-print
+    const formattedData = data.map(item => {
+        try {
+            // Parse and re-stringify to format and clean up the JSON string
+            const parsedValue = JSON.parse(item.value);
+            return `"${item.attrName}": ${JSON.stringify(parsedValue, null, 2)}`;
+        } catch (error) {
+            console.error(`Error parsing JSON for ${item.attrName}: ${error}`);
+            return `"${item.attrName}": "Invalid JSON"`;
+        }
+    }).join(",\n");
+
+    const jsonString = `{${formattedData}}`;
     const blob = new Blob([jsonString], { type: "application/json" });
     const href = URL.createObjectURL(blob);
     const link = document.createElement("a");
@@ -36,7 +47,7 @@ const JSONViewer = ({ data }) => {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-  };
+};
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
