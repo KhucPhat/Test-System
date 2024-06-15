@@ -76,7 +76,6 @@ const JSONViewer = ({ data }) => {
     setSnackbar({ ...snackbar, open: false });
   };
 
-  console.log(listData);
   return (
     <div>
       <div
