@@ -1,5 +1,6 @@
-import { listDataAttrJson } from "@/constants/lists/listJson";
+import { jsonMapString, jsonObject, listDataAttrJson } from "@/constants/lists/listJson";
 import JSONViewer from "./TestDataJson/JsonViewer";
+import ValidateValueChangeJson from "./TestDataJson/TestValidateChangeValueJson";
 
 function Test() {
   function downloadJSON(data, filename = "data.json") {
@@ -22,7 +23,7 @@ function Test() {
   return (
     <div>
       <h1>JSON Data Viewer</h1>
-      <JSONViewer data={listDataAttrJson} />
+      <ValidateValueChangeJson data={JSON.parse(jsonMapString)} />
     </div>
   );
 }

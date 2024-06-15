@@ -62,3 +62,51 @@ function hasDuplicatesWithDifferentIdOrValueAndDes(array) {
 
 const result = hasDuplicatesWithDifferentIdOrValueAndDes(items);
 console.log(result); // Output: true hoặc false
+
+const listdata = [
+    { id: 8008, param: "23" },
+    { id: 8007, param: "23a" },
+    { id: 8078, param: "239" }
+];
+
+function extractId(str) {
+    // Loại bỏ tất cả ký tự không phải số để trích xuất ID
+    return str.replace(/[^0-9]/g, '');
+}
+
+function findItemById(id) {
+    // Tìm item trong listdata phù hợp với ID đã cho
+    return listdata.find(d => d.id === parseInt(id));
+}
+
+function processObject(object) {
+    // Xử lý đối tượng đầu vào và trả về đối tượng listdata tương ứng
+    if (typeof object.value === 'string') {
+        const id = extractId(object.value);
+        return findItemById(id);
+    } else if (Array.isArray(object.value)) {
+        return object.value.map(subObj => {
+            for (let att in subObj) {
+                const id = extractId(subObj[att]);
+                return findItemById(id);
+            }
+        });
+    } else if (typeof object.value === 'object') {
+        const result = {};
+        for (let att in object.value) {
+            const id = extractId(object.value[att]);
+            result[att] = findItemById(id);
+        }
+        return result;
+    }
+}
+
+// Ví dụ sử dụng:
+const object1 = { key: 'object1', value: "@8078|a|b#" };
+const object2 = { key: 'object2', value: [{ att1: "@8007|v|c#" }] };
+const object3 = { key: 'object3', value: { attr2: "@8008|c|d#" } };
+
+console.log("Result for object1:", processObject(object1));
+console.log("Result for object2:", processObject(object2));
+console.log("Result for object3:", processObject(object3));
+
