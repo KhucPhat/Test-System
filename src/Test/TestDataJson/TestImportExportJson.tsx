@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import JSONFormatter from "./TestConvertJsonMap";
 import MuiAlert from "@mui/material/Alert";
 
-const JSONViewer = ({ data }) => {
+const TestImportExportJson = ({ data }) => {
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
@@ -46,9 +46,21 @@ const JSONViewer = ({ data }) => {
         try {
           const json = JSON.parse(e.target.result);
           const newData = convertToJsonAttributeObject(json);
+          const updatedData = [...listData];
           console.log(newData);
-          // Validate JSON or manipulate it if necessary
-          setListData([...data, ...newData]);
+
+          newData.forEach((newItem) => {
+            const existingItem = updatedData.find(item => item.attrName === newItem.attrName);
+            if (existingItem && existingItem.value !== newItem.value) {
+              // Chỉ cập nhật nếu giá trị mới khác với giá trị hiện tại
+              existingItem.value = newItem.value;
+            } else if (!existingItem) {
+              // Nếu attrName không tồn tại, thêm mới vào danh sách
+              updatedData.push(newItem);
+            }
+          });
+
+          setListData(updatedData);
           setSnackbar({
             open: true,
             message: "JSON imported successfully!",
@@ -80,6 +92,27 @@ const JSONViewer = ({ data }) => {
   return (
     <div>
       <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+      }}
+      >
+        <Button
+          onClick={handleDownload}
+          variant="contained"
+          color="primary"
+          style={{ marginTop: "20px", marginRight: '20px' }}
+        >
+          Export JSON
+        </Button>
+        <input
+          type="file"
+          accept="application/json"
+          onChange={handleFileChange}
+          style={{ marginTop: "20px" }}
+        />
+      </div>
+      <div
         style={{
           margin: "20px",
           padding: "20px",
@@ -101,20 +134,7 @@ const JSONViewer = ({ data }) => {
         ))}
         {`}`}
       </div>
-      <Button
-        onClick={handleDownload}
-        variant="contained"
-        color="primary"
-        style={{ marginTop: "20px" }}
-      >
-        Export JSON
-      </Button>
-      <input
-        type="file"
-        accept="application/json"
-        onChange={handleFileChange}
-        style={{ marginTop: "20px" }}
-      />
+
       <Snackbar
         open={snackbar.open}
         autoHideDuration={6000}
@@ -133,4 +153,4 @@ const JSONViewer = ({ data }) => {
   );
 };
 
-export default JSONViewer;
+export default TestImportExportJson;

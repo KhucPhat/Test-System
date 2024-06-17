@@ -1,5 +1,7 @@
+import { jsonMapString, jsonObjectList, listDataAttrJson } from "@/constants/lists/listJson";
 import CustomTextField from "./TestChangeInput/TestInputChangeParameter";
 import DataTableSort from "./TestTable/TestTableSortData";
+import TestImportExportJson from "./TestDataJson/TestImportExportJson";
 
 function Test() {
   function downloadJSON(data, filename = "data.json") {
@@ -22,7 +24,7 @@ function Test() {
   return (
     <div>
       <h1>JSON Data Viewer</h1>
-      <DataTableSort />
+      <TestImportExportJson data={listDataAttrJson} />
     </div>
   );
 }
