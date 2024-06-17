@@ -1,6 +1,4 @@
-import { jsonMapString, jsonObject, listDataAttrJson } from "@/constants/lists/listJson";
-import JSONViewer from "./TestDataJson/JsonViewer";
-import ValidateValueChangeJson from "./TestDataJson/TestValidateChangeValueJson";
+import CustomTextField from "./TestChangeInput/TestInputChangeParameter";
 
 function Test() {
   function downloadJSON(data, filename = "data.json") {
@@ -23,7 +21,7 @@ function Test() {
   return (
     <div>
       <h1>JSON Data Viewer</h1>
-      <ValidateValueChangeJson data={JSON.parse(jsonMapString)} />
+      <CustomTextField />
     </div>
   );
 }

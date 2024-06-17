@@ -106,6 +106,23 @@ export const jsonMapString = `{
  }
  `;
 
+export const jsonKeyNumber = `{
+   "0.1": {
+             "attr12": "0.1",
+             "attr23": 23,
+             "attr33": false,
+              "attListLong": [23,23],
+             "attr43": {
+                "dateKey": {
+                   "attr2312": "Ab1",
+                   "attr23146": 22,
+                   "attr131375": true,
+                   "attri32123": "2024-12-20 12:40:13"
+                }
+             }
+   }
+}`
+
 export const jsonObject = `{
     "attr1": [2020, 2022],
     "attr2": 23,
@@ -147,9 +164,9 @@ export const jsonObjectArray = `
   `;
 
 export const listDataAttrJson = [
-  {
-    attrName: "Object1",
-    value: `{
+   {
+      attrName: "Object1",
+      value: `{
     "attrString": "a",
     "attrFloat": 0.3,
     "attrDate": "@70002|we|a#",
@@ -255,10 +272,10 @@ export const listDataAttrJson = [
        }
     }
  }`,
-  },
-  {
-    attrName: "Object 2",
-    value: `{
+   },
+   {
+      attrName: "Object 2",
+      value: `{
     "attr1": [2020, 2022],
     "attr2": 23,
     "attr3": "ab",
@@ -277,24 +294,24 @@ export const listDataAttrJson = [
       }
       }
     }`,
-  },
-  {
-    attrName: "Object 3",
-    value: `{
+   },
+   {
+      attrName: "Object 3",
+      value: `{
       "attr1": [2020, 2022],
       "attr2": 23,
       "attr3": "ab"
       }`,
-  },
-  {
-    attrName: "Object 4",
-    value: `[
+   },
+   {
+      attrName: "Object 4",
+      value: `[
       0,1
         ]`,
-  },
-  {
-    attrName: "Object 5",
-    value: `
+   },
+   {
+      attrName: "Object 5",
+      value: `
    [
      {
      "attrLong": 12,
@@ -304,5 +321,5 @@ export const listDataAttrJson = [
      }
    ]
    `,
-  },
+   },
 ];

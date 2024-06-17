@@ -1,54 +1,63 @@
 import React, { useEffect, useState } from 'react';
 
-const EditableJSONFormatter = ({ data }) => {
+const TestChangeValueJson = ({ data }) => {
   const [jsonData, setJsonData] = useState(data);
- 
+
   function parsePath(path) {
-    return path.split(/\.|\[(\d+)\]/g).filter(Boolean).map(key => {
-      const trimmedKey = key.trim();
-      return isNaN(trimmedKey) ? trimmedKey : parseInt(trimmedKey);
-    });
+    const regex = /(?:^|\.|\[)(\d+\.\d+|[^\.\[\]]+)(?=\]|\[|\.)?/g;
+    const keys = [];
+    let match;
+    while (match = regex.exec(path)) {
+      keys.push(match[1]);
+    }
+    return keys;
   }
 
   function updateNestedObject(data, keyPath, stringValue) {
     let current = data;
     for (let i = 0; i < keyPath.length; i++) {
       const key = keyPath[i];
-
-      if (i === keyPath.length - 1) {
-        if (Array.isArray(current) && typeof key === 'number') {
-          if (key < current.length) {
-              current[key] = stringValue;
+      const isLast = i === keyPath.length - 1;
+  
+      if (Array.isArray(current)) {
+        const index = parseInt(key);
+        if (!isNaN(index) && index.toString() === key) {
+          if (index < current.length) {
+            if (isLast) {
+              current[index] = stringValue;
+              return data;
+            }
+            current = current[index];
           } else {
+            console.error(`Chỉ số ${index} vượt quá giới hạn của mảng.`);
             return null;
           }
-        } else if (typeof key === 'string' && current.hasOwnProperty(key)) {
-            current[key] = stringValue;
         } else {
-          console.error(`Key ${key} does not exist in the object.`);
+          console.error(`Khóa ${key} không phải là số nguyên cho mảng.`);
+          return null;
+        }
+      } else if (typeof current === 'object' && current !== null) {
+        if (key in current) {
+          if (isLast) {
+            current[key] = stringValue;
+            return data;
+          }
+          current = current[key];
+        } else {
+          console.error(`Khóa ${key} không tồn tại trong đối tượng.`);
           return null;
         }
       } else {
-        if (Array.isArray(current) && typeof key === 'number') {
-          if (key < current.length) {
-            current = current[key];
-          } else {
-            console.error(`Index ${key} out of bounds for array.`);
-            return null;
-          }
-        } else if (current.hasOwnProperty(key)) {
-          current = current[key];
-        } else {
-          console.error(`Key ${key} does not exist in the object.`);
-          return null;
-        }
+        console.error(`Đường dẫn ${key} không dẫn đến một đối tượng hợp lệ.`);
+        return null;
       }
     }
     return data;
-  }
+  }    
 
   function handleChange(path, newValue) {
     const keys = parsePath(path);
+    console.log(keys);
 
     setJsonData(prevData => {
       const safeCopy = Array.isArray(prevData) ? [...prevData] : { ...prevData };
@@ -60,7 +69,7 @@ const EditableJSONFormatter = ({ data }) => {
       }
     });
   }
-   
+
   const containsSpecialChars = (value) => {
     return /[@|#|\|]/.test(value);
   };
@@ -124,4 +133,4 @@ const EditableJSONFormatter = ({ data }) => {
   );
 };
 
-export default EditableJSONFormatter;
+export default TestChangeValueJson;
