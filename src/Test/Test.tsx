@@ -1,4 +1,5 @@
 import CustomTextField from "./TestChangeInput/TestInputChangeParameter";
+import DataTableSort from "./TestTable/TestTableSortData";
 
 function Test() {
   function downloadJSON(data, filename = "data.json") {
@@ -21,7 +22,7 @@ function Test() {
   return (
     <div>
       <h1>JSON Data Viewer</h1>
-      <CustomTextField />
+      <DataTableSort />
     </div>
   );
 }
