@@ -5,9 +5,14 @@ function ArrayManager({ initialItems }) {
 
    // Hàm để di chuyển phần tử lên trong mảng
 function moveUp(items, index) {
-    if (index > 0) {
+ // Chỉnh index để phù hợp với mảng bắt đầu từ 0
+    if (index > 1) {
         const newItems = [...items];
-        [newItems[index - 1], newItems[index]] = [newItems[index], newItems[index - 1]];
+        // Đổi chỗ các phần tử
+        [newItems[index - 1], newItems[index - 2]] = [newItems[index - 2], newItems[index - 1]];
+        // Cập nhật index của các phần tử
+        newItems[index - 2].index = index - 1; // Phần tử trước
+        newItems[index - 1].index = index; // Phần tử hiện tại
         return newItems;
     }
     return items;
@@ -15,9 +20,14 @@ function moveUp(items, index) {
 
 // Hàm để di chuyển phần tử xuống trong mảng
 function moveDown(items, index) {
-    if (index < items.length - 1) {
+     // Chỉnh index để phù hợp với mảng bắt đầu từ 0
+    if (index < items.length) {
         const newItems = [...items];
-        [newItems[index + 1], newItems[index]] = [newItems[index], newItems[index + 1]];
+        // Đổi chỗ các phần tử
+        [newItems[index], newItems[index - 1]] = [newItems[index - 1], newItems[index]];
+        // Cập nhật index của các phần tử
+        newItems[index - 1].index = index; // Phần tử hiện tại
+        newItems[index].index = index + 1; // Phần tử sau
         return newItems;
     }
     return items;
