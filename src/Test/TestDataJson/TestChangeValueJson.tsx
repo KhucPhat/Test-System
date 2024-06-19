@@ -11,57 +11,76 @@ const TestChangeValueJson = ({ data }) => {
       keys.push(match[1]);
     }
     return keys;
-  }
+  };
 
-  function updateNestedObject(data, keyPath, stringValue) {
+  function updateNestedObjectAndKey(data, keyPath, newValue) {
     let current = data;
+    let rootKeyToUpdate = null;
+    let oldKeyValue = null;
+
     for (let i = 0; i < keyPath.length; i++) {
-      const key = keyPath[i];
-      const isLast = i === keyPath.length - 1;
-  
-      if (Array.isArray(current)) {
-        const index = parseInt(key);
-        if (!isNaN(index) && index.toString() === key) {
-          if (index < current.length) {
-            if (isLast) {
-              current[index] = stringValue;
-              return data;
+        const key = keyPath[i];
+        const isLast = i === keyPath.length - 1;
+
+        if (Array.isArray(current)) {
+            const index = parseInt(key);
+            if (!isNaN(index) && index.toString() === key) {
+                if (index < current.length) {
+                    if (isLast) {
+                        current[index] = newValue;
+                    }
+                    current = current[index];
+                } else {
+                    console.error(`Chỉ số ${index} vượt quá giới hạn của mảng.`);
+                    return null;
+                }
+            } else {
+                console.error(`Khóa ${key} không phải là số nguyên cho mảng.`);
+                return null;
             }
-            current = current[index];
-          } else {
-            console.error(`Chỉ số ${index} vượt quá giới hạn của mảng.`);
+        } else if (typeof current === 'object' && current !== null) {
+            if (key in current) {
+                if (isLast) {
+                    // Capture the old value for potential root key update
+                    oldKeyValue = current[key];
+                    current[key] = newValue;
+                }
+                current = current[key];
+            } else {
+                console.error(`Khóa ${key} không tồn tại trong đối tượng.`);
+                return null;
+            }
+        } else {
+            console.error(`Đường dẫn ${key} không dẫn đến một đối tượng hợp lệ.`);
             return null;
-          }
-        } else {
-          console.error(`Khóa ${key} không phải là số nguyên cho mảng.`);
-          return null;
         }
-      } else if (typeof current === 'object' && current !== null) {
-        if (key in current) {
-          if (isLast) {
-            current[key] = stringValue;
-            return data;
-          }
-          current = current[key];
-        } else {
-          console.error(`Khóa ${key} không tồn tại trong đối tượng.`);
-          return null;
-        }
-      } else {
-        console.error(`Đường dẫn ${key} không dẫn đến một đối tượng hợp lệ.`);
-        return null;
-      }
     }
+
+    // Check if the old value matches any root key, and update it
+    if (oldKeyValue && oldKeyValue in data) {
+        rootKeyToUpdate = oldKeyValue;
+    }
+    console.log(rootKeyToUpdate);
+    console.log(data)
+    console.log(oldKeyValue);
+
+    if (rootKeyToUpdate) {
+        const newObject = {...data};
+        newObject[newValue] = {...newObject[rootKeyToUpdate]};
+        delete newObject[rootKeyToUpdate];
+        return newObject;
+    }
+
     return data;
-  }    
+}
+
 
   function handleChange(path, newValue) {
     const keys = parsePath(path);
-    console.log(keys);
 
     setJsonData(prevData => {
       const safeCopy = Array.isArray(prevData) ? [...prevData] : { ...prevData };
-      const updatedData = updateNestedObject(safeCopy, keys, newValue);
+      const updatedData = updateNestedObjectAndKey(safeCopy, keys, newValue);
       if (updatedData) {
         return updatedData;
       } else {
@@ -123,8 +142,6 @@ const TestChangeValueJson = ({ data }) => {
       );
     }
   };
-
-  console.log(jsonData);
 
   return (
     <div style={{ fontFamily: 'monospace' }}>

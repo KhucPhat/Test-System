@@ -1,7 +1,9 @@
-import { jsonMapString, jsonObjectList, listDataAttrJson } from "@/constants/lists/listJson";
+import { jsonKeyNumber, jsonMapString, jsonObjectList, listDataAttrJson } from "@/constants/lists/listJson";
 import CustomTextField from "./TestChangeInput/TestInputChangeParameter";
 import DataTableSort from "./TestTable/TestTableSortData";
 import TestImportExportJson from "./TestDataJson/TestImportExportJson";
+import TextPopup from "./TestData/TestSelectText";
+import TestChangeValueJson from "./TestDataJson/TestChangeValueJson";
 
 function Test() {
   function downloadJSON(data, filename = "data.json") {
@@ -24,7 +26,7 @@ function Test() {
   return (
     <div>
       <h1>JSON Data Viewer</h1>
-      <TestImportExportJson data={listDataAttrJson} />
+      <TestChangeValueJson data={JSON.parse(jsonKeyNumber)} />
     </div>
   );
 }
