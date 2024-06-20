@@ -50,7 +50,41 @@ function hasNonEmptyValue(obj) {
   // Sử dụng Object.values() để lấy tất cả các giá trị trong object,
   // sau đó sử dụng some() để kiểm tra xem có giá trị nào không phải là chuỗi rỗng
   return Object.values(obj).some(value => value !== '');
+};
+
+function determineDataType(defaultValue) {
+    // Kiểm tra kiểu Boolean
+    if (defaultValue === "true" || defaultValue === "false") {
+        return 'Boolean';
+    }
+
+    // Kiểm tra kiểu Date
+    const datePattern = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/; // YYYY-MM-DD HH:MM:SS
+    if (datePattern.test(defaultValue)) {
+        return 'Date';
+    }
+
+    // Kiểm tra kiểu Number (Long và Float)
+    if (!isNaN(defaultValue)) {
+        // Phân biệt giữa Long và Float
+        if (defaultValue.includes('.')) {
+            return 'Float';
+        } else {
+            return 'Long';
+        }
+    }
+
+    // Mặc định sẽ trả về kiểu String
+    return 'String';
 }
+
+// Ví dụ sử dụng hàm
+console.log(determineDataType("0.1"));       // Output: Float
+console.log(determineDataType("2"));         // Output: Long
+console.log(determineDataType("true"));      // Output: Boolean
+console.log(determineDataType("2024-12-30 12:20:30")); // Output: Date
+console.log(determineDataType("test"));      // Output: String
+
 
 // // globalAccess.ts
 // import store from './store';
