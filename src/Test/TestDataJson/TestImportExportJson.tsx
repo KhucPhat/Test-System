@@ -26,7 +26,7 @@ const TestImportExportJson = ({ data }) => {
     return result;
   }
 
-  const handleDownload = () => {
+  const handleDownloadJson = () => {
     const jsonString = `{${listData.map((item) => `"${item.attrName}": ${item.value}`).join(",")}}`;
     const blob = new Blob([jsonString], { type: "application/json" });
     const href = URL.createObjectURL(blob);
@@ -38,7 +38,7 @@ const TestImportExportJson = ({ data }) => {
     document.body.removeChild(link);
   };
 
-  const handleFileChange = (event) => {
+  const handleImportJson = (event) => {
     const file = event.target.files[0];
     if (file && file.type === "application/json") {
       const reader = new FileReader();
@@ -46,20 +46,30 @@ const TestImportExportJson = ({ data }) => {
         try {
           const json = JSON.parse(e.target.result);
           const newData = convertToJsonAttributeObject(json);
+  
+          // Check if any value exceeds 255 characters
+          const hasExcessiveLength = newData.some(item => item.value.length > 255);
+          if (hasExcessiveLength) {
+            setSnackbar({
+              open: true,
+              message: "Some values exceed the maximum length of 255 characters!",
+              severity: "error",
+            });
+            return; // Stop processing if any value is too long
+          }
+  
           const updatedData = [...listData];
           console.log(newData);
-
+  
           newData.forEach((newItem) => {
             const existingItem = updatedData.find(item => item.attrName === newItem.attrName);
             if (existingItem && existingItem.value !== newItem.value) {
-              // Chỉ cập nhật nếu giá trị mới khác với giá trị hiện tại
               existingItem.value = newItem.value;
             } else if (!existingItem) {
-              // Nếu attrName không tồn tại, thêm mới vào danh sách
               updatedData.push(newItem);
             }
           });
-
+  
           setListData(updatedData);
           setSnackbar({
             open: true,
@@ -83,6 +93,7 @@ const TestImportExportJson = ({ data }) => {
       });
     }
   };
+  
 
   const handleCloseSnackbar = () => {
     setSnackbar({ ...snackbar, open: false });
@@ -98,7 +109,7 @@ const TestImportExportJson = ({ data }) => {
       }}
       >
         <Button
-          onClick={handleDownload}
+          onClick={handleDownloadJson}
           variant="contained"
           color="primary"
           style={{ marginTop: "20px", marginRight: '20px' }}
@@ -108,7 +119,7 @@ const TestImportExportJson = ({ data }) => {
         <input
           type="file"
           accept="application/json"
-          onChange={handleFileChange}
+          onChange={handleImportJson}
           style={{ marginTop: "20px" }}
         />
       </div>

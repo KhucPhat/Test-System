@@ -26,7 +26,8 @@ function Test() {
   return (
     <div>
       <h1>JSON Data Viewer</h1>
-      <TestChangeValueJson data={JSON.parse(jsonKeyNumber)} />
+      {/* <TestChangeValueJson data={JSON.parse(jsonKeyNumber)} /> */}
+      <TestImportExportJson data={listDataAttrJson} />
     </div>
   );
 }
