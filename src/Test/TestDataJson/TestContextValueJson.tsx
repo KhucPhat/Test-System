@@ -11,111 +11,65 @@ import {
   Button,
 } from '@mui/material';
 
-const JSONFormatter = ({ data }) => {
+const TestContextValueJson = ({ data }) => {
   const [jsonData, setJsonData] = useState(data);
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedValue, setSelectedValue] = useState('');
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [name, setName] = useState('');
   const [value, setValue] = useState('');
-  const [error, setError] = useState('');
   const [keyPath, setKeyPath] = useState('');
 
-  function validateDataType(value) {
-    if (value === null) return 'Null';
-    if (Array.isArray(value)) return 'Array';
-    if (value instanceof Date && !isNaN(value.valueOf())) return 'DateTime';
-    const type = typeof value;
-    if (type === 'number') {
-      return Number.isInteger(value) ? 'Long' : 'Float';
-    }
-    if (type === 'boolean') return 'Boolean';
-    return type.charAt(0).toUpperCase() + type.slice(1);  // Capitalize the first letter
-  }
-
-  function convertToOriginalType(originalValue, stringValue) {
-    const expectedType = validateDataType(originalValue);
-    switch (expectedType) {
-      case 'Long':
-        return parseInt(stringValue, 10);
-      case 'Float':
-        return parseFloat(stringValue);
-      case 'Boolean':
-        return stringValue.toLowerCase() === 'true' || stringValue === '1';
-      case 'DateTime':
-        const date = new Date(stringValue);
-        return isNaN(date.valueOf()) ? originalValue : date; // If not a valid date, return original value
-      case 'String':
-        return stringValue;
-      default:
-        return stringValue; // Handle complex types like Array or Object
-    }
-  }
-
   function parsePath(path) {
-    return path.split(/\.|\[(\d+)\]/g).filter(Boolean).map(key => {
-      const trimmedKey = key.trim();
-      return isNaN(trimmedKey) ? trimmedKey : parseInt(trimmedKey);
-    });
+    const regex = /(?:^|\.|\[)(\d+\.\d+|[^\.\[\]]+)(?=\]|\[|\.)?/g;
+    const keys = [];
+    let match;
+    while (match = regex.exec(path)) {
+      keys.push(match[1]);
+    }
+    return keys;
   }
 
   function updateNestedObject(data, keyPath, stringValue) {
     let current = data;
     for (let i = 0; i < keyPath.length; i++) {
       const key = keyPath[i];
-
-      if (i === keyPath.length - 1) {
-        if (Array.isArray(current) && typeof key === 'number') {
-          if (key < current.length) {
-            const originalValue = current[key];
-            const convertedValue = convertToOriginalType(originalValue, stringValue);
-            if (validateDataType(convertedValue) === validateDataType(originalValue)) {
-              current[key] = convertedValue;
-            } else {
-              console.error(`Type conversion error for index ${key}`);
-              setError(`Type conversion error for index ${key}`);
-              return null;
+      const isLast = i === keyPath.length - 1;
+  
+      if (Array.isArray(current)) {
+        const index = parseInt(key);
+        if (!isNaN(index) && index.toString() === key) {
+          if (index < current.length) {
+            if (isLast) {
+              current[index] = stringValue;
+              return data;
             }
+            current = current[index];
           } else {
-            console.error(`Index ${key} out of bounds for array.`);
-            setError(`Index ${key} out of bounds for array.`);
-            return null;
-          }
-        } else if (typeof key === 'string' && current.hasOwnProperty(key)) {
-          const originalValue = current[key];
-          const convertedValue = convertToOriginalType(originalValue, stringValue);
-          if (validateDataType(convertedValue) === validateDataType(originalValue)) {
-            current[key] = convertedValue;
-          } else {
-            console.error(`Type conversion error for key '${key}'`);
-            setError(`Type conversion error for key '${key}'`);
+            console.error(`Chỉ số ${index} vượt quá giới hạn của mảng.`);
             return null;
           }
         } else {
-          console.error(`Key ${key} does not exist in the object.`);
-          setError(`Key ${key} does not exist in the object.`);
+          console.error(`Khóa ${key} không phải là số nguyên cho mảng.`);
+          return null;
+        }
+      } else if (typeof current === 'object' && current !== null) {
+        if (key in current) {
+          if (isLast) {
+            current[key] = stringValue;
+            return data;
+          }
+          current = current[key];
+        } else {
+          console.error(`Khóa ${key} không tồn tại trong đối tượng.`);
           return null;
         }
       } else {
-        if (Array.isArray(current) && typeof key === 'number') {
-          if (key < current.length) {
-            current = current[key];
-          } else {
-            console.error(`Index ${key} out of bounds for array.`);
-            setError(`Index ${key} out of bounds for array.`);
-            return null;
-          }
-        } else if (current.hasOwnProperty(key)) {
-          current = current[key];
-        } else {
-          console.error(`Key ${key} does not exist in the object.`);
-          setError(`Key ${key} does not exist in the object.`);
-          return null;
-        }
+        console.error(`Đường dẫn ${key} không dẫn đến một đối tượng hợp lệ.`);
+        return null;
       }
     }
     return data;
-  }
+  }    
 
   function handleChange(path, newValue) {
     const keys = parsePath(path);
@@ -124,7 +78,6 @@ const JSONFormatter = ({ data }) => {
       const safeCopy = Array.isArray(prevData) ? [...prevData] : { ...prevData };
       const updatedData = updateNestedObject(safeCopy, keys, newValue);
       if (updatedData) {
-        setError(''); // Clear previous error
         return updatedData;
       } else {
         return prevData; // Return previous data if update failed
@@ -161,15 +114,6 @@ const JSONFormatter = ({ data }) => {
 
   const handleDialogClose = () => {
     setDialogOpen(false);
-  };
-
-  const handleApply = () => {
-    alert(`Updated value: ${value} for ${name}`);
-    handleDialogClose();
-  };
-
-  const containsSpecialChars = (value) => {
-    return /[@|#|\|]/.test(value);
   };
 
   const formatJSON = (item, path = '') => {
@@ -213,12 +157,6 @@ const JSONFormatter = ({ data }) => {
           <span
             onMouseUp={handleMouseUp}
             onContextMenu={(event) => {
-                const itemSelected = {
-                    attributeName : parentKey,
-                    value: stringValue
-                };
-                console.log(itemSelected);
-                
                 handleContextMenu(event, path);
             }}
             style={{ color: stringValue.includes('@') ? 'red' : 'black', cursor: 'context-menu' }}
@@ -246,15 +184,6 @@ const JSONFormatter = ({ data }) => {
             Update the value for the selected field.
           </DialogContentText>
           <TextField
-            autoFocus
-            margin="dense"
-            label="Name"
-            type="text"
-            fullWidth
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-          <TextField
             margin="dense"
             label="Value"
             type="text"
@@ -274,4 +203,4 @@ const JSONFormatter = ({ data }) => {
   );
 };
 
-export default JSONFormatter;
+export default TestContextValueJson;

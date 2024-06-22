@@ -1,58 +1,86 @@
 import React, { useEffect, useState } from 'react';
 
-const EditableJSONFormatter = ({ data }) => {
+const TestChangeValueJson = ({ data }) => {
   const [jsonData, setJsonData] = useState(data);
- 
+
   function parsePath(path) {
-    return path.split(/\.|\[(\d+)\]/g).filter(Boolean).map(key => {
-      const trimmedKey = key.trim();
-      return isNaN(trimmedKey) ? trimmedKey : parseInt(trimmedKey);
-    });
-  }
-
-  function updateNestedObject(data, keyPath, stringValue) {
-    let current = data;
-    for (let i = 0; i < keyPath.length; i++) {
-      const key = keyPath[i];
-
-      if (i === keyPath.length - 1) {
-        if (Array.isArray(current) && typeof key === 'number') {
-          if (key < current.length) {
-              current[key] = stringValue;
-          } else {
-            return null;
-          }
-        } else if (typeof key === 'string' && current.hasOwnProperty(key)) {
-            current[key] = stringValue;
-        } else {
-          console.error(`Key ${key} does not exist in the object.`);
-          return null;
-        }
-      } else {
-        if (Array.isArray(current) && typeof key === 'number') {
-          if (key < current.length) {
-            current = current[key];
-          } else {
-            console.error(`Index ${key} out of bounds for array.`);
-            return null;
-          }
-        } else if (current.hasOwnProperty(key)) {
-          current = current[key];
-        } else {
-          console.error(`Key ${key} does not exist in the object.`);
-          return null;
-        }
-      }
+    const regex = /(?:^|\.|\[)(\d+\.\d+|[^\.\[\]]+)(?=\]|\[|\.)?/g;
+    const keys = [];
+    let match;
+    while (match = regex.exec(path)) {
+      keys.push(match[1]);
     }
+    return keys;
+  };
+
+  function updateNestedObjectAndKey(data, keyPath, newValue) {
+    let current = data;
+    let rootKeyToUpdate = null;
+    let oldKeyValue = null;
+
+    for (let i = 0; i < keyPath.length; i++) {
+        const key = keyPath[i];
+        const isLast = i === keyPath.length - 1;
+
+        if (Array.isArray(current)) {
+            const index = parseInt(key);
+            if (!isNaN(index) && index.toString() === key) {
+                if (index < current.length) {
+                    if (isLast) {
+                        current[index] = newValue;
+                    }
+                    current = current[index];
+                } else {
+                    console.error(`Chỉ số ${index} vượt quá giới hạn của mảng.`);
+                    return null;
+                }
+            } else {
+                console.error(`Khóa ${key} không phải là số nguyên cho mảng.`);
+                return null;
+            }
+        } else if (typeof current === 'object' && current !== null) {
+            if (key in current) {
+                if (isLast) {
+                    // Capture the old value for potential root key update
+                    oldKeyValue = current[key];
+                    current[key] = newValue;
+                }
+                current = current[key];
+            } else {
+                console.error(`Khóa ${key} không tồn tại trong đối tượng.`);
+                return null;
+            }
+        } else {
+            console.error(`Đường dẫn ${key} không dẫn đến một đối tượng hợp lệ.`);
+            return null;
+        }
+    }
+
+    // Check if the old value matches any root key, and update it
+    if (oldKeyValue && oldKeyValue in data) {
+        rootKeyToUpdate = oldKeyValue;
+    }
+    console.log(rootKeyToUpdate);
+    console.log(data)
+    console.log(oldKeyValue);
+
+    if (rootKeyToUpdate) {
+        const newObject = {...data};
+        newObject[newValue] = {...newObject[rootKeyToUpdate]};
+        delete newObject[rootKeyToUpdate];
+        return newObject;
+    }
+
     return data;
-  }
+}
+
 
   function handleChange(path, newValue) {
     const keys = parsePath(path);
 
     setJsonData(prevData => {
       const safeCopy = Array.isArray(prevData) ? [...prevData] : { ...prevData };
-      const updatedData = updateNestedObject(safeCopy, keys, newValue);
+      const updatedData = updateNestedObjectAndKey(safeCopy, keys, newValue);
       if (updatedData) {
         return updatedData;
       } else {
@@ -60,7 +88,7 @@ const EditableJSONFormatter = ({ data }) => {
       }
     });
   }
-   
+
   const containsSpecialChars = (value) => {
     return /[@|#|\|]/.test(value);
   };
@@ -115,8 +143,6 @@ const EditableJSONFormatter = ({ data }) => {
     }
   };
 
-  console.log(jsonData);
-
   return (
     <div style={{ fontFamily: 'monospace' }}>
       {formatJSON(jsonData)}
@@ -124,4 +150,4 @@ const EditableJSONFormatter = ({ data }) => {
   );
 };
 
-export default EditableJSONFormatter;
+export default TestChangeValueJson;

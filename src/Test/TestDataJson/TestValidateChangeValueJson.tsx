@@ -5,11 +5,21 @@ const ValidateValueChangeJson = ({ data }) => {
   const [errors, setErrors] = useState({});
   const [newElementIndexes, setNewElementIndexes] = useState([]);
 
+  // function parsePath(path) {
+  //   return path.split(/\.|\[(\d+)\]/g).filter(Boolean).map(key => {
+  //     const trimmedKey = key.trim();
+  //     return isNaN(trimmedKey) ? trimmedKey : parseInt(trimmedKey);
+  //   });
+  // }
+
   function parsePath(path) {
-    return path.split(/\.|\[(\d+)\]/g).filter(Boolean).map(key => {
-      const trimmedKey = key.trim();
-      return isNaN(trimmedKey) ? trimmedKey : parseInt(trimmedKey);
-    });
+    const regex = /(?:^|\.|\[)(\d+\.\d+|[^\.\[\]]+)(?=\]|\[|\.)?/g;
+    const keys = [];
+    let match;
+    while (match = regex.exec(path)) {
+      keys.push(match[1]);
+    }
+    return keys;
   }
 
   function getType(value) {

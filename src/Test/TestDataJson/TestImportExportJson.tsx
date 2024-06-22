@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import JSONFormatter from "./TestConvertJsonMap";
 import MuiAlert from "@mui/material/Alert";
 
-const JSONViewer = ({ data }) => {
+const TestImportExportJson = ({ data }) => {
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
@@ -26,7 +26,7 @@ const JSONViewer = ({ data }) => {
     return result;
   }
 
-  const handleDownload = () => {
+  const handleDownloadJson = () => {
     const jsonString = `{${listData.map((item) => `"${item.attrName}": ${item.value}`).join(",")}}`;
     const blob = new Blob([jsonString], { type: "application/json" });
     const href = URL.createObjectURL(blob);
@@ -38,7 +38,7 @@ const JSONViewer = ({ data }) => {
     document.body.removeChild(link);
   };
 
-  const handleFileChange = (event) => {
+  const handleImportJson = (event) => {
     const file = event.target.files[0];
     if (file && file.type === "application/json") {
       const reader = new FileReader();
@@ -46,9 +46,31 @@ const JSONViewer = ({ data }) => {
         try {
           const json = JSON.parse(e.target.result);
           const newData = convertToJsonAttributeObject(json);
+  
+          // Check if any value exceeds 255 characters
+          const hasExcessiveLength = newData.some(item => item.value.length > 255);
+          if (hasExcessiveLength) {
+            setSnackbar({
+              open: true,
+              message: "Some values exceed the maximum length of 255 characters!",
+              severity: "error",
+            });
+            return; // Stop processing if any value is too long
+          }
+  
+          const updatedData = [...listData];
           console.log(newData);
-          // Validate JSON or manipulate it if necessary
-          setListData([...data, ...newData]);
+  
+          newData.forEach((newItem) => {
+            const existingItem = updatedData.find(item => item.attrName === newItem.attrName);
+            if (existingItem && existingItem.value !== newItem.value) {
+              existingItem.value = newItem.value;
+            } else if (!existingItem) {
+              updatedData.push(newItem);
+            }
+          });
+  
+          setListData(updatedData);
           setSnackbar({
             open: true,
             message: "JSON imported successfully!",
@@ -71,6 +93,7 @@ const JSONViewer = ({ data }) => {
       });
     }
   };
+  
 
   const handleCloseSnackbar = () => {
     setSnackbar({ ...snackbar, open: false });
@@ -79,6 +102,27 @@ const JSONViewer = ({ data }) => {
   console.log(listData);
   return (
     <div>
+      <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+      }}
+      >
+        <Button
+          onClick={handleDownloadJson}
+          variant="contained"
+          color="primary"
+          style={{ marginTop: "20px", marginRight: '20px' }}
+        >
+          Export JSON
+        </Button>
+        <input
+          type="file"
+          accept="application/json"
+          onChange={handleImportJson}
+          style={{ marginTop: "20px" }}
+        />
+      </div>
       <div
         style={{
           margin: "20px",
@@ -101,20 +145,7 @@ const JSONViewer = ({ data }) => {
         ))}
         {`}`}
       </div>
-      <Button
-        onClick={handleDownload}
-        variant="contained"
-        color="primary"
-        style={{ marginTop: "20px" }}
-      >
-        Export JSON
-      </Button>
-      <input
-        type="file"
-        accept="application/json"
-        onChange={handleFileChange}
-        style={{ marginTop: "20px" }}
-      />
+
       <Snackbar
         open={snackbar.open}
         autoHideDuration={6000}
@@ -133,4 +164,4 @@ const JSONViewer = ({ data }) => {
   );
 };
 
-export default JSONViewer;
+export default TestImportExportJson;
