@@ -4,6 +4,22 @@ const TestChangeValueAndKeyJson = ({ data }) => {
   const [jsonData, setJsonData] = useState(data);
   const [newElementIndexes, setNewElementIndexes] = useState([]);
 
+  function isSpecialPath(path) {
+    // Kiểm tra xem đường dẫn có phải là loại đặc biệt không
+    return /^@.*#.*\./.test(path);
+}
+
+function handleSpecialPath(path) {
+    // Tách phần trước dấu chấm đầu tiên sau #
+    const specialPart = path.substring(0, path.indexOf('.', path.indexOf('#')) + 1);
+    const remainder = path.substring(path.indexOf('.', path.indexOf('#')) + 1);
+    
+    // Phân tích phần còn lại bằng parsePath
+    const parsedRemainder = parsePath(remainder);
+    
+    return [specialPart.slice(0, -1)].concat(parsedRemainder);
+}
+
 function parsePath(path) {
     const specialRegex = /^@.*#.*\..*\[.*\]$/;  // Regex kiểm tra định dạng đặc biệt
     let regex;
