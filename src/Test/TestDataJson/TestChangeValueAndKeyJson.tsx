@@ -20,32 +20,15 @@ function handleSpecialPath(path) {
     return [specialPart.slice(0, -1)].concat(parsedRemainder);
 }
 
-function parsePath(path) {
-    const specialRegex = /^@.*#.*\..*\[.*\]$/;  // Regex kiểm tra định dạng đặc biệt
-    let regex;
-
-    // Nếu path phù hợp với định dạng đặc biệt, sử dụng regex thích hợp
-    if (specialRegex.test(path)) {
-        regex = /(?:^|\.)((?:@[^#]+#)[^\.\[\]]*|[^\.\[\]]+)(?=\[|\.|$)/g;
-    } else {
-        regex = /(?:^|\.|\[)(\d+\.\d+|[^\.\[\]]+)(?=\]|\[|\.)?/g; // Regex gốc
-    }
-
+  function parsePath(path) {
+    const regex = /(?:^|\.|\[)(\d+\.\d+|[^\.\[\]]+)(?=\]|\[|\.)?/g;
     const keys = [];
     let match;
     while (match = regex.exec(path)) {
-        let key = match[1].replace(/^\[|\]$/g, ''); // Xóa bỏ dấu ngoặc nếu có
-        if (key.includes('[')) {
-            // Xử lý thêm cho trường hợp chỉ số mảng
-            let parts = key.split(/\[|\]\.?/).filter(k => k !== '');
-            keys.push(...parts);
-        } else {
-            keys.push(key);
-        }
+      keys.push(match[1]);
     }
     return keys;
-}
-
+  };
 
   function updateNestedObject(data, keyPath, newValue) {
     let current = data;
