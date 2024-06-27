@@ -4,15 +4,32 @@ const TestChangeValueAndKeyJson = ({ data }) => {
   const [jsonData, setJsonData] = useState(data);
   const [newElementIndexes, setNewElementIndexes] = useState([]);
 
-  function parsePath(path) {
-    const regex = /(?:^|\.|\[)(\d+\.\d+|[^\.\[\]]+)(?=\]|\[|\.)?/g;
+function parsePath(path) {
+    const specialRegex = /^@.*#.*\..*\[.*\]$/;  // Regex kiểm tra định dạng đặc biệt
+    let regex;
+
+    // Nếu path phù hợp với định dạng đặc biệt, sử dụng regex thích hợp
+    if (specialRegex.test(path)) {
+        regex = /(?:^|\.)((?:@[^#]+#)[^\.\[\]]*|[^\.\[\]]+)(?=\[|\.|$)/g;
+    } else {
+        regex = /(?:^|\.|\[)(\d+\.\d+|[^\.\[\]]+)(?=\]|\[|\.)?/g; // Regex gốc
+    }
+
     const keys = [];
     let match;
     while (match = regex.exec(path)) {
-      keys.push(match[1]);
+        let key = match[1].replace(/^\[|\]$/g, ''); // Xóa bỏ dấu ngoặc nếu có
+        if (key.includes('[')) {
+            // Xử lý thêm cho trường hợp chỉ số mảng
+            let parts = key.split(/\[|\]\.?/).filter(k => k !== '');
+            keys.push(...parts);
+        } else {
+            keys.push(key);
+        }
     }
     return keys;
-  }
+}
+
 
   function updateNestedObject(data, keyPath, newValue) {
     let current = data;
