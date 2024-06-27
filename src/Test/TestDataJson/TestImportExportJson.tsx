@@ -2,6 +2,7 @@ import { Button, Snackbar, Typography } from "@mui/material";
 import React, { useState } from "react";
 import JSONFormatter from "./TestConvertJsonMap";
 import MuiAlert from "@mui/material/Alert";
+import { validateComplexJson, validateDataType } from "@/constants/function/functionValidate";
 
 const TestImportExportJson = ({ data }) => {
   const [snackbar, setSnackbar] = useState({
@@ -24,7 +25,7 @@ const TestImportExportJson = ({ data }) => {
     }
 
     return result;
-  }
+  };
 
   const handleDownloadJson = () => {
     const jsonString = `{${listData.map((item) => `"${item.attrName}": ${item.value}`).join(",")}}`;
@@ -46,7 +47,9 @@ const TestImportExportJson = ({ data }) => {
         try {
           const json = JSON.parse(e.target.result);
           const newData = convertToJsonAttributeObject(json);
-  
+          let additionalAttributes = false;
+          let typeMismatch = false;
+
           // Check if any value exceeds 255 characters
           const hasExcessiveLength = newData.some(item => item.value.length > 255);
           if (hasExcessiveLength) {
@@ -55,27 +58,44 @@ const TestImportExportJson = ({ data }) => {
               message: "Some values exceed the maximum length of 255 characters!",
               severity: "error",
             });
-            return; // Stop processing if any value is too long
+            return;
           }
-  
+
           const updatedData = [...listData];
-          console.log(newData);
-  
           newData.forEach((newItem) => {
             const existingItem = updatedData.find(item => item.attrName === newItem.attrName);
-            if (existingItem && existingItem.value !== newItem.value) {
-              existingItem.value = newItem.value;
+            if (existingItem) {
+              const oldValue = JSON.parse(existingItem.value);
+              const newValue = JSON.parse(newItem.value);
+
+              console.log(newValue)
+              const expectedType = typeof oldValue === 'number' ? (Number.isInteger(oldValue) ? 'Long' : 'Float') : typeof oldValue; // Xác định loại dựa trên oldValue
+
+              if (!validateComplexJson(newValue, expectedType)) {
+                typeMismatch = true;
+              } else if (existingItem.value !== newItem.value) {
+                existingItem.value = newItem.value;
+              }
             } else if (!existingItem) {
               updatedData.push(newItem);
+              additionalAttributes = true;
             }
           });
-  
+
           setListData(updatedData);
-          setSnackbar({
-            open: true,
-            message: "JSON imported successfully!",
-            severity: "success",
-          });
+          if (typeMismatch) {
+            setSnackbar({
+              open: true,
+              message: "Some attributes have type mismatches!",
+              severity: "error",
+            });
+          } else {
+            setSnackbar({
+              open: true,
+              message: additionalAttributes ? 'Import thừa attribute' : "JSON imported successfully!",
+              severity: "success",
+            });
+          }
         } catch (error) {
           setSnackbar({
             open: true,
@@ -93,7 +113,7 @@ const TestImportExportJson = ({ data }) => {
       });
     }
   };
-  
+
 
   const handleCloseSnackbar = () => {
     setSnackbar({ ...snackbar, open: false });
@@ -103,10 +123,10 @@ const TestImportExportJson = ({ data }) => {
   return (
     <div>
       <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-      }}
+        style={{
+          display: "flex",
+          alignItems: "center",
+        }}
       >
         <Button
           onClick={handleDownloadJson}

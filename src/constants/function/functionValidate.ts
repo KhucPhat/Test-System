@@ -1,4 +1,4 @@
-function isValidFloat(input) {
+function isValidFloatString(input) {
     const num = parseFloat(input);
     // Check if the parsed number is finite, and the input is not an empty string
     if (!isNaN(num) && isFinite(num) && input.trim() !== "") {
@@ -78,13 +78,6 @@ function determineDataType(defaultValue) {
     return 'String';
 }
 
-// Ví dụ sử dụng hàm
-console.log(determineDataType("0.1"));       // Output: Float
-console.log(determineDataType("2"));         // Output: Long
-console.log(determineDataType("true"));      // Output: Boolean
-console.log(determineDataType("2024-12-30 12:20:30")); // Output: Date
-console.log(determineDataType("test"));      // Output: String
-
 
 // // globalAccess.ts
 // import store from './store';
@@ -98,4 +91,49 @@ console.log(determineDataType("test"));      // Output: String
 // });
 
 // // This file can now export `globalValue` or use it for other global purposes.
+function isValidLong(value) {
+    return Number.isInteger(value);
+  }
+  
+  function isValidFloat(value) {
+    return typeof value === 'number' && !Number.isInteger(value);
+  }
+  
+  function isValidBoolean(value) {
+    return typeof value === 'boolean';
+  }
+  
+  function isValidDateTime(value) {
+    const dateRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/;
+    return typeof value === 'string' && dateRegex.test(value);
+  }
+  
+  export function validateDataType(newValue, oldValue) {
+    if (typeof oldValue === 'boolean') {
+      return isValidBoolean(newValue);
+    } else if (typeof oldValue === 'number') {
+      return Number.isInteger(oldValue) ? isValidLong(newValue) : isValidFloat(newValue);
+    } else if (typeof oldValue === 'string') {
+      // Chú ý rằng kiểu string có thể là DateTime hoặc chuỗi thông thường
+      const isOldDateTime = isValidDateTime(oldValue);
+      if (isOldDateTime) {
+        return isValidDateTime(newValue);
+      }
+      return typeof newValue === 'string'; // Xử lý chuỗi thông thường
+    }
+    return false; // Nếu kiểu dữ liệu không được hỗ trợ
+  };
 
+ export function validateComplexJson(value, expectedType) {
+    if (Array.isArray(value)) {
+      // Kiểm tra nếu value là một mảng
+      return value.every(item => validateComplexJson(item, expectedType));
+    } else if (typeof value === 'object' && value !== null) {
+      // Kiểm tra nếu value là một đối tượng
+      return Object.keys(value).every(key => expectedType[key] && validateComplexJson(value[key], expectedType[key]));
+    } else {
+      // Kiểm tra nếu value là giá trị đơn lẻ
+      return validateDataType(value, expectedType);
+    }
+  }
+  

@@ -123,6 +123,23 @@ export const jsonKeyNumber = `{
    }
 }`
 
+export const jsonKey = `{
+   "0.12": {
+             "attr12": "0.12",
+             "attr23": 23,
+             "attr33": false,
+              "attListLong": [23,23],
+             "attr43": {
+                "Ab13": {
+                   "attr2312": "Ab13",
+                   "attr23146": 22,
+                   "attr131375": true,
+                   "attri32123": "2024-12-20 12:40:13"
+                }
+             }
+   }
+}`
+
 export const jsonObject = `{
     "attr1": [2020, 2022],
     "attr2": 23,
