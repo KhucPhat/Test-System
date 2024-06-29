@@ -12,15 +12,16 @@ const ValidateValueChangeJson = ({ data }) => {
   //   });
   // }
 
-  function parsePath(path) {
-    const regex = /(?:^|\.|\[)(\d+\.\d+|[^\.\[\]]+)(?=\]|\[|\.)?/g;
-    const keys = [];
-    let match;
-    while (match = regex.exec(path)) {
-      keys.push(match[1]);
-    }
-    return keys;
+function parsePath(path) {
+  const regex = /(?:^|\[|\.)?([^\.\[\]]+)(?:\]|\[|\.|$)/g;
+  const keys = [];
+  let match;
+  while (match = regex.exec(path)) {
+    keys.push(match[1]);
   }
+  return keys;
+}
+
 
   function getType(value) {
     if (Array.isArray(value)) {
@@ -101,39 +102,68 @@ const ValidateValueChangeJson = ({ data }) => {
     return data;
   };
 
-  function handleChange(path, newValue) {
-    const keys = parsePath(path);
-    const originalValue = keys.reduce((acc, key) => acc[key], jsonData);
-    const originalType = getType(originalValue);
+function handleChange(path, newValue) {
+  const keys = parsePath(path);
+  let current = jsonData;
 
-    if (!validateType(originalType, originalValue, newValue)) {
-      setErrors({ ...errors, [path]: `Type error: Expected ${originalType}` });
-      return; // Early return to prevent state update
+  // Traversing to get the last value using the keys
+  for (const key of keys) {
+    if (current[key] !== undefined) {
+      current = current[key];
     } else {
-      setErrors({ ...errors, [path]: '' }); // Clear error for the path
+      // Handle the case where the path is invalid
+      setErrors({ ...errors, [path]: `Path error: ${path} is invalid.` });
+      return;
     }
+  }
 
-    let typedValue = newValue;
-    if (originalType === 'integer') {
+  const originalValue = current;
+  const originalType = getType(originalValue);  // Ensure this function is correctly determining the type
+
+  // Validate and convert the value
+  if (!validateType(originalType, originalValue, newValue)) {
+    setErrors({ ...errors, [path]: `Type error: Expected ${originalType}, but got ${typeof newValue}` });
+    return; // Early return to prevent state update
+  } else {
+    setErrors({ ...errors, [path]: '' }); // Clear error for the path
+  }
+
+  let typedValue;
+  // Assume validateType checks for type compatibility
+  switch (originalType) {
+    case 'integer':
       typedValue = parseInt(newValue);
-    } else if (originalType === 'float') {
+      break;
+    case 'float':
       typedValue = parseFloat(newValue);
-    } else if (originalType === 'boolean') {
+      break;
+    case 'boolean':
       typedValue = newValue.toLowerCase() === 'true';
-    } else if (originalType === 'datetime') {
+      break;
+    case 'datetime':
+      typedValue = new Date(newValue);
+      break;
+    case 'array':
+      try {
+        typedValue = JSON.parse(newValue);
+      } catch (error) {
+        setErrors({ ...errors, [path]: `JSON parse error: ${error.message}` });
+        return;
+      }
+      break;
+    default:
       typedValue = newValue;
-    } else if (originalType === 'array') {
-      typedValue = JSON.parse(newValue);
-    } else {
-      typedValue = newValue;
-    }
+      break;
+  }
 
-    setJsonData(prevData => {
-      const safeCopy = Array.isArray(prevData) ? [...prevData] : { ...prevData };
-      const updatedData = updateNestedObject(safeCopy, keys, typedValue);
-      return updatedData || prevData; // Return previous data if update failed
-    });
-  };
+  // Update the state with the new value
+  setJsonData(prevData => {
+    const safeCopy = Array.isArray(prevData) ? [...prevData] : { ...prevData };
+    const updatedData = updateNestedObject(safeCopy, keys, typedValue);
+    return updatedData || prevData; // Return previous data if update failed
+  });
+}
+
 
 
   function addElementToArray(path, suggestedValue) {

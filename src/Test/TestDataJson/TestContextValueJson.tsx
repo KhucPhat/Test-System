@@ -84,7 +84,53 @@ const TestContextValueJson = ({ data }) => {
       }
     });
     setDialogOpen(false)
-  }
+  };
+
+  function resetNestedObject(newData,currentData, keyPath ) {
+    let current = newData;
+    let defaults = currentDatal
+
+    for (let i = 0; i < keyPath.length; i++) {
+    const key = keyPath[i];
+
+      if (i === keyPath.length - 1) {
+      if(
+        Array.isArray(current)
+      && typeof key === "number"
+        && key < current.length
+        && Array.isArray(defaults)
+        && key < defaults.length
+      ) {
+        current[key]=defaults[key];
+      } else if (
+        typeof key === "string" 
+        && current.hasOwnProperty(key)
+        && defaults.hasOwnProperty(key)
+      ) {
+        current[key]=defaults[key];
+      } else {
+        return null;
+      } 
+      } else {
+         if(
+        Array.isArray(current)
+      && typeof key === "number"
+        && key < current.length
+        && Array.isArray(defaults)
+        && key < defaults.length
+      ) {
+           current = current[key];
+           defaults=defaults[key];
+      } else if (current.hasOwnProperty(key)
+        && defaults.hasOwnProperty(key)) {
+             current = current[key];
+           defaults=defaults[key];
+        }
+      } else {
+        return null;
+      }
+    }
+  };
 
   const handleMouseUp = (event) => {
     const selection = window.getSelection();
