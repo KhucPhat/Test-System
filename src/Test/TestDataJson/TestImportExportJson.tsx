@@ -39,80 +39,244 @@ const TestImportExportJson = ({ data }) => {
     document.body.removeChild(link);
   };
 
-  const handleImportJson = (event) => {
-    const file = event.target.files[0];
-    if (file && file.type === "application/json") {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        try {
-          const json = JSON.parse(e.target.result);
-          const newData = convertToJsonAttributeObject(json);
-          let additionalAttributes = false;
-          let typeMismatch = false;
+function extractDetails(value, type) {
+  let regex;
+  if (type === "charSpec") {
+    // Định dạng cho trường hợp 1: "@charspecID|api parameter name|default_value#"
+    regex = /^@([^|]+)\|([^|]+)\|([^#]+)#$/;
+  } else if (type === "testElement") {
+    // Định dạng cho trường hợp 2: "@@attribtueTagName|TestDataElement#"
+    regex = /^@@([^|]+)\|([^#]+)#$/;
+  } else {
+    throw new Error("Invalid type specified");
+  }
 
-          // Check if any value exceeds 255 characters
-          const hasExcessiveLength = newData.some(item => item.value.length > 255);
-          if (hasExcessiveLength) {
-            setSnackbar({
-              open: true,
-              message: "Some values exceed the maximum length of 255 characters!",
-              severity: "error",
-            });
-            return;
+  const match = value.match(regex);
+  if (match) {
+    if (type === "charSpec") {
+      return {
+        charSpecId: match[1],
+        apiParameterName: match[2],
+        apiParameterDefaultValue: match[3]
+      };
+    } else if (type === "testElement") {
+      return {
+        attributeTagName: match[1],
+        testDataElement: match[2]
+      };
+    }
+  } else {
+    throw new Error("Invalid format for " + type);
+  }
+}
+
+// Ví dụ sử dụng hàm extractDetails
+try {
+  const value1 = "@1234|paramName|defaultValue#";
+  const details1 = extractDetails(value1, "case1");
+  console.log("Case 1:", details1);
+
+  const value2 = "@@attributeTagName|TestDataElement#";
+  const details2 = extractDetails(value2, "case2");
+  console.log("Case 2:", details2);
+} catch (error) {
+  console.error(error.message);
+}
+
+  
+function validateJsonValues(json) {
+  const errors = [];
+
+  function validateDataType(key, value) {
+    // Assuming a simplified set of rules for demonstration
+    if (typeof value === 'string') {
+      // Check for a valid date-time format
+      if (/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(value)) {
+        // It's a valid date-time format
+        if (isNaN(new Date(value).getTime())) {
+          errors.push(`${key}: Invalid date-time format`);
+        }
+      } else if (value.length > 255) {
+        errors.push(`${key}: String exceeds 255 characters`);
+      } else {
+        // Validate special patterns
+      if (value.startsWith('@') && value.endsWith('#')) {
+        if (!/^@\d{4}\|[a-z]+\|[a-z]+#$/.test(value)) {
+          errors.push(`${key}: Invalid format for special case 1`);
+        }
+      } else if (value.startsWith('@@') && value.endsWith('#')) {
+        if (!/^@@[a-zA-Z]+(?:\|[a-zA-Z]+)+#$/.test(value)) {
+          errors.push(`${key}: Invalid format for special case 2`);
+        }
+      }
+      }
+    } else if (typeof value === 'number') {
+      if (!Number.isInteger(value) && !Number.isFinite(value)) {
+        errors.push(`${key}: Number is not a valid Long or Float`);
+      }
+    } else if (typeof value === 'boolean') {
+      if (typeof value !== 'boolean') {
+        errors.push(`${key}: Not a valid Boolean`);
+      }
+    } else if (Array.isArray(value)) {
+      value.forEach((item, index) => {
+        validateDataType(`${key}[${index}]`, item);
+      });
+    } else if (typeof value === 'object' && value !== null) {
+      for (const subKey in value) {
+        validateDataType(`${key}.${subKey}`, value[subKey]);
+      }
+    } else {
+      errors.push(`${key}: Unsupported data type`);
+    }
+  }
+
+  function validateValue(key, value) {
+    try {
+      if (typeof value === 'string') {
+        // Check if this is a JSON string
+        if (value.startsWith('{') || value.startsWith('[')) {
+          const obj = JSON.parse(value);
+          validateDataType(key, obj);
+        } else {
+          validateDataType(key, value);
+        }
+      } else {
+        validateDataType(key, value);
+      }
+    } catch (e) {
+      errors.push(`${key}: Error parsing JSON or invalid data - ${e.message}`);
+    }
+  }
+
+  for (const key in json) {
+    validateValue(key, json[key]);
+  }
+
+  return errors.length > 0 ? errors : null;
+};
+
+  function safeParse(value) {
+  try {
+    return JSON.parse(value);
+  } catch (e) {
+    return value; // Nếu không phải JSON, trả về chính giá trị đầu vào
+  }
+}
+
+  function isFloat(n){
+    return Number(n) === n && n % 1 !== 0;
+}
+
+function deepTypeCheck(original, newItem, path = "", errors = []) {
+  if (typeof original === 'string' && typeof newItem === 'string') {
+    original = safeParse(original);
+    newItem = safeParse(newItem);
+  }
+
+  if (typeof original !== typeof newItem && newItem) {
+    errors.push({ name: path, message: `Expected type '${typeof original}' but found type '${typeof newItem}'` });
+  }
+  
+  if (typeof original === 'object' && original !== null && newItem !== null) {
+    if (Array.isArray(original) !== Array.isArray(newItem)) {
+      errors.push({ name: path, message: "One is an array and the other is not" });
+    }
+    if (Array.isArray(original)) {
+      if (original.length !== newItem.length) {
+        errors.push({ name: path, message: "Array lengths do not match" });
+      }
+      for (let i = 0; i < original.length; i++) {
+        deepTypeCheck(original[i], newItem[i], `${path}[${i}]`, errors);
+      }
+    } else {
+      const keysOriginal = Object.keys(original);
+      const keysNewItem = Object.keys(newItem);
+      if (keysOriginal.length !== keysNewItem.length) {
+        errors.push({ name: path, message: "Object keys do not match" });
+      }
+      for (const key of keysOriginal) {
+        if (!keysNewItem.includes(key)) {
+          errors.push({ name: `${path}.${key}`, message: "Missing key in new item" });
+        }
+        deepTypeCheck(original[key], newItem[key], `${path}.${key}`, errors);
+      }
+    }
+  } else if (typeof original === 'number' && typeof newItem === 'number') {
+    if (Number.isInteger(original) !== Number.isInteger(newItem) || isFloat(original) !== isFloat(newItem)) {
+      errors.push({ name: path, message: "Number types do not match (expected Integer or Float)" });
+    }
+  } else if (typeof original === 'string' && typeof newItem === 'string') {
+    if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/.test(original) && !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/.test(newItem)) {
+      errors.push({ name: path, message: "Date-time formats do not match" });
+    }
+  } else if (typeof original === 'boolean' && typeof newItem !== 'boolean') {
+    errors.push({ name: path, message: "Expected a boolean" });
+  }
+
+  return errors; // Return the error list as an array of objects
+};
+ 
+ const handleImportJson = (event, currentData) => {
+  const file = event.target.files[0];
+  if (file && file.type === "application/json") {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const json = JSON.parse(e.target.result);
+        const newData = convertToJsonAttributeObject(json);
+        
+        // Thực hiện kiểm tra dữ liệu mới so với dữ liệu hiện có
+        const updatedData = [...listData];
+         let errors = [];
+        let errorMessages = [];
+        newData.forEach((newItem) => {
+          const existingItem = updatedData.find(item => item.attrName === newItem.attrName);
+          if (existingItem) {
+          deepTypeCheck(JSON.parse(existingItem.value), JSON.parse(newItem.value), newItem.attrName, errors);
+          if (erros.length) {
+            const dataErros = [
+              ...errorMessages,
+              ...errors
+            ]
           }
-
-          const updatedData = [...listData];
-          newData.forEach((newItem) => {
-            const existingItem = updatedData.find(item => item.attrName === newItem.attrName);
-            if (existingItem) {
-              const oldValue = JSON.parse(existingItem.value);
-              const newValue = JSON.parse(newItem.value);
-
-              console.log(newValue)
-              const expectedType = typeof oldValue === 'number' ? (Number.isInteger(oldValue) ? 'Long' : 'Float') : typeof oldValue; // Xác định loại dựa trên oldValue
-
-              if (!validateComplexJson(newValue, expectedType)) {
-                typeMismatch = true;
-              } else if (existingItem.value !== newItem.value) {
-                existingItem.value = newItem.value;
-              }
-            } else if (!existingItem) {
-              updatedData.push(newItem);
-              additionalAttributes = true;
-            }
-          });
-
-          setListData(updatedData);
-          if (typeMismatch) {
-            setSnackbar({
-              open: true,
-              message: "Some attributes have type mismatches!",
-              severity: "error",
-            });
+            
           } else {
-            setSnackbar({
-              open: true,
-              message: additionalAttributes ? 'Import thừa attribute' : "JSON imported successfully!",
-              severity: "success",
-            });
+            updatedData.push(newItem);  // Thêm mới nếu không tồn tại
           }
-        } catch (error) {
+        });
+
+        if (errorMessages.length > 0) {
           setSnackbar({
             open: true,
-            message: "Invalid JSON format!",
+               message: "Import Error: " + errors.map(error => `${error.name}: ${error.message}`).join(", "),
             severity: "error",
           });
+        } else {
+          setListData(updatedData);
+          setSnackbar({
+            open: true,
+            message: "JSON imported successfully!",
+            severity: "success",
+          });
         }
-      };
-      reader.readAsText(file);
-    } else {
-      setSnackbar({
-        open: true,
-        message: "Please upload a valid JSON file!",
-        severity: "error",
-      });
-    }
-  };
+      } catch (error) {
+        setSnackbar({
+          open: true,
+          message: "Invalid JSON format!",
+          severity: "error",
+        });
+      }
+    };
+    reader.readAsText(file);
+  } else {
+    setSnackbar({
+      open: true,
+      message: "Please upload a valid JSON file!",
+      severity: "error",
+    });
+  }
+};
 
 
   const handleCloseSnackbar = () => {
