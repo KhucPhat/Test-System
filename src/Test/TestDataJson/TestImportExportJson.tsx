@@ -171,6 +171,7 @@ function validateJsonValues(json) {
 }
 
 function deepTypeCheck(original, newItem, path = "", errors = []) {
+   const detailCharSpec = extractDetails(value, "case 1");
   if (typeof original === 'string' && typeof newItem === 'string') {
     original = safeParse(original);
     newItem = safeParse(newItem);
