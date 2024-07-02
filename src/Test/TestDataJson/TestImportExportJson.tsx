@@ -103,6 +103,8 @@ function validateJsonValues(json) {
       if (value.startsWith('@') && value.endsWith('#')) {
         if (!/^@\d{4}\|[a-z]+\|[a-z]+#$/.test(value)) {
           errors.push(`${key}: Invalid format for special case 1`);
+        } else {
+          const detailCharSpec = extractDetails(value, "case 1");
         }
       } else if (value.startsWith('@@') && value.endsWith('#')) {
         if (!/^@@[a-zA-Z]+(?:\|[a-zA-Z]+)+#$/.test(value)) {
