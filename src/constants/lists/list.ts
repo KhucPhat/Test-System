@@ -101,3 +101,80 @@ export const listTestCase = [
     icon: faDatabase,
   },
 ];
+
+export listStepTabs = [
+  {
+    tabId: 11221,
+    tabName: "step1",
+    hasTab: true,
+    childTabs: [
+      {
+        tabId: 333333,
+        tabName: "req1",
+        listDataCharSpec : [
+          {
+            charId: 890000,
+            parentId: 333333,
+            apiName: 'adadad',
+            value: "true",
+          },
+            {
+            charId: 8900055,
+            parentId: 333333,
+            apiName: 'test',
+            value: "2334444",
+          }
+        ]
+      },
+       {
+        tabId: 333334,
+        tabName: "req2",
+        listDataCharSpec : [
+          {
+            charId: 890001,
+            parentId: 333334,
+            apiName: 'bal',
+            value: "false",
+          }
+        ]
+      },
+    ]
+  },
+  {
+    tabId: 112245,
+    tabName: "step2",
+    hasTab: true,
+    childTabs: [
+      {
+        tabId: 333383,
+        tabName: "req21",
+        listDataCharSpec : [
+          {
+            charId: 880000,
+            parentId: 333383,
+            apiName: 'adadad',
+            value: "true",
+          },
+            {
+            charId: 880255,
+            parentId: 333383,
+            apiName: 'test12',
+            value: "2334444",
+          }
+        ]
+      },
+       {
+        tabId: 233323,
+        tabName: "req2",
+        listDataCharSpec : [
+          {
+            charId: 890001,
+            parentId: 233323,
+            apiName: 'bal223',
+            value: "false",
+          }
+        ]
+      },
+    ]
+  }
+]
