@@ -102,3 +102,25 @@ function updateCharacterSpecs(listStepTabs, newListDataCharSpec) {
   console.log(listStepTabs);
 };
 
+function updateListTagName(listStepTabs, newTags) {
+  listStepTabs.forEach(tab => {
+    tab.childTabs.forEach(child => {
+      if (child.listTagName) {
+        child.listTagName.forEach(tag => {
+          newTags.forEach(newTag => {
+            if (tag.compaInfo.id === newTag.compaInfo.id &&
+                tag.compaInfo.stepName === newTag.compaInfo.stepName &&
+                tag.compaInfo.requestName === newTag.compaInfo.requestName &&
+                tag.compaInfo.tabName === newTag.compaInfo.tabName) {
+              tag.compaInfo.charSpecUse = newTag.compaInfo.charSpecUse.map(item => ({ ...item }));
+            }
+          });
+        });
+      }
+    });
+  });
+
+  // In ra mảng sau khi cập nhật để kiểm tra
+  console.log(listStepTabs);
+}
+
