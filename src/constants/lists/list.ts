@@ -124,7 +124,8 @@ export listStepTabs = [
             apiName: 'test',
             value: "2334444",
           }
-        ]
+        ],
+        tabType: "request"
       },
        {
         tabId: 333334,
@@ -136,7 +137,8 @@ export listStepTabs = [
             apiName: 'bal',
             value: "false",
           }
-        ]
+        ],
+        tabType: "request"
       },
     ]
   },
@@ -161,7 +163,8 @@ export listStepTabs = [
             apiName: 'test12',
             value: "2334444",
           }
-        ]
+        ],
+         tabType: "request"
       },
        {
         tabId: 233323,
@@ -173,7 +176,8 @@ export listStepTabs = [
             apiName: 'bal223',
             value: "false",
           }
-        ]
+        ],
+          tabType: "request"
       },
     ]
   }
