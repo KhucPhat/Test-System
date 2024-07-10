@@ -109,33 +109,3 @@ const object3 = { key: 'object3', value: { attr2: "@8008|c|d#" } };
 console.log("Result for object1:", processObject(object1));
 console.log("Result for object2:", processObject(object2));
 console.log("Result for object3:", processObject(object3));
-
-// Hàm Update và add dữ liệu
-function updateAndPruneListAllParams(currentList, listPar) {
-    const parentIdsInB = new Set(listPar.map(item => item.parentId));
-
-    // Update existing items in currentList with values from listPar
-    currentList.forEach(aItem => {
-        const match = listPar.find(bItem => aItem.parentId === bItem.parentId);
-        if (match) {
-            aItem.value = match.value;
-            aItem.valuePar = match.valuePar;
-        }
-    });
-
-    // Add new items from listPar to currentList
-    listPar.forEach(bItem => {
-        if (!currentList.some(aItem => aItem.parentId === bItem.parentId)) {
-            currentList.push({ parentId: bItem.parentId, value: bItem.value, valuePar: bItem.valuePar });
-        }
-    });
-
-    // Filter currentList to remove items not in listPar
-    return currentList.filter(aItem => {
-        if (!parentIdsInB.has(aItem.parentId)) {
-            return true;
-        }
-        return listPar.some(bItem => aItem.parentId === bItem.parentId);
-    });
-}
-
