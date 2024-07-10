@@ -125,23 +125,7 @@ export listStepTabs = [
             value: "2334444",
           }
         ],
-        tabType: "request"
-      },
-       {
-        tabId: 333334,
-        tabName: "req2",
-        listDataCharSpec : [
-          {
-            charId: 890001,
-            parentId: 333334,
-            apiName: 'bal',
-            value: "false",
-          }
-        ],
-        tabType: "request"
-      },
-    ],
-    listTagName: [
+         listTagName: [
       {
         compaInfo: {
           id: 2,
@@ -157,6 +141,39 @@ export listStepTabs = [
           ]
         }
       }
+    ],
+        tabType: "request"
+      },
+       {
+        tabId: 333334,
+        tabName: "req2",
+        listDataCharSpec : [
+          {
+            charId: 890001,
+            parentId: 333334,
+            apiName: 'bal',
+            value: "false",
+          }
+        ],
+          listTagName: [
+      {
+        compaInfo: {
+          id: 23,
+          stepName: "step1",
+          requestName: "req2",
+          tabName: "tag23",
+          charSpecUse: [
+            {
+               charSpecId: 122244,
+              value: "1312313",
+              referId: 12223
+            }
+          ]
+        }
+      }
+    ],
+        tabType: "request"
+      },
     ],
   },
   {
