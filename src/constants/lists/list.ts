@@ -140,7 +140,24 @@ export listStepTabs = [
         ],
         tabType: "request"
       },
-    ]
+    ],
+    listTagName: [
+      {
+        compaInfo: {
+          id: 2,
+          stepName: "step1",
+          requestName: "req1",
+          tabName: "tag2",
+          charSpecUse: [
+            {
+               charSpecId: 1222,
+              value: "true",
+              referId: 12223
+            }
+          ]
+        }
+      }
+    ],
   },
   {
     tabId: 112245,
