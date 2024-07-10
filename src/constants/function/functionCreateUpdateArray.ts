@@ -80,3 +80,25 @@ let arrayB = [
 
 let updatedArray = updateAndPruneArrayA(arrayA, arrayB);
 console.log(updatedArray);
+
+function updateCharacterSpecs(listStepTabs, newListDataCharSpec) {
+  // Duyệt qua từng phần tử trong mảng cập nhật mới
+  newListDataCharSpec.forEach(updateItem => {
+    // Duyệt qua từng tab và child tab trong mảng ban đầu
+    listStepTabs.forEach(stepTab => {
+      stepTab.childTabs.forEach(childTab => {
+        // Tìm và cập nhật thông tin character nếu tìm thấy khớp charId và parentId
+        childTab.listDataCharSpec.forEach(charSpec => {
+          if (charSpec.charId === updateItem.charId && charSpec.parentId === updateItem.parentId) {
+            charSpec.apiName = updateItem.apiName;
+            charSpec.value = updateItem.value;
+          }
+        });
+      });
+    });
+  });
+
+  // In ra mảng sau khi đã cập nhật để kiểm tra
+  console.log(listStepTabs);
+};
+
