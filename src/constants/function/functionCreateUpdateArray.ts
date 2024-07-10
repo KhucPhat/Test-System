@@ -29,7 +29,37 @@ function updateAndPruneArrayA(arrayA, arrayB) {
             aItem.type === bItem.type
         );
     });
+};
+
+// Hàm Update và add dữ liệu
+function updateAndPruneListAllParams(currentList, listPar) {
+    const parentIdsInB = new Set(listPar.map(item => item.parentId));
+
+    // Update existing items in currentList with values from listPar
+    currentList.forEach(aItem => {
+        const match = listPar.find(bItem => aItem.parentId === bItem.parentId);
+        if (match) {
+            aItem.value = match.value;
+            aItem.valuePar = match.valuePar;
+        }
+    });
+
+    // Add new items from listPar to currentList
+    listPar.forEach(bItem => {
+        if (!currentList.some(aItem => aItem.parentId === bItem.parentId)) {
+            currentList.push({ parentId: bItem.parentId, value: bItem.value, valuePar: bItem.valuePar });
+        }
+    });
+
+    // Filter currentList to remove items not in listPar
+    return currentList.filter(aItem => {
+        if (!parentIdsInB.has(aItem.parentId)) {
+            return true;
+        }
+        return listPar.some(bItem => aItem.parentId === bItem.parentId);
+    });
 }
+
 // Ví dụ sử dụng
 let arrayA = [
     { parentId: 1, name: 'Node 1', function: 'Func A', type: 'Type X', value: 10 },
