@@ -151,26 +151,6 @@ const Module = () => {
         },
       ],
     },
-    {
-      label: "Catagory 3",
-      icon: faFile,
-      hasCategory: true,
-      submenu: [
-        {
-          label: "Sub 1",
-          icon: faFile,
-          hasCategory: true,
-          submenu: [
-            {
-              label: "Boom 1",
-              icon: faFile,
-            },
-            {
-              label: "Boom 2",
-              icon: faFile,
-            },
-          ],
-        },
         {
           label: "Sub 2",
           icon: faFile,
@@ -238,6 +218,26 @@ const Module = () => {
       icon: faFile,
       hasCategory: false
     },
+       {
+      label: "Catagory 3",
+      icon: faFile,
+      hasCategory: true,
+      submenu: [
+        {
+          label: "Sub 1",
+          icon: faFile,
+          hasCategory: true,
+          submenu: [
+            {
+              label: "Boom 1",
+              icon: faFile,
+            },
+            {
+              label: "Boom 2",
+              icon: faFile,
+            },
+          ],
+        },
   ];
 
   const sortedMenus = copyAndSort(menus);
