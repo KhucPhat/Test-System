@@ -122,5 +122,25 @@ function updateListTagName(listStepTabs, newTags) {
 
   // In ra mảng sau khi cập nhật để kiểm tra
   console.log(listStepTabs);
-}
+};
+
+function filterStepsWithNonEmptyValues(stepsPopup) {
+  return stepsPopup.map(step => {
+    const filteredChildTabs = step.childTabs.filter(tab => {
+      // Kiểm tra các tab có listValue không rỗng
+      const hasNonEmptyListValue = tab.listValue && tab.listValue.length > 0;
+      // Kiểm tra các tab có attrTag với listValue không rỗng hoặc charSpecList không rỗng
+      const hasValidAttrTag = tab.attrTag && tab.attrTag.some(tag => tag.listValue && tag.listValue.length > 0);
+      const hasNonEmptyCharSpecList = tab.charSpecList && tab.charSpecList.length > 0;
+
+      return hasNonEmptyListValue || hasValidAttrTag || hasNonEmptyCharSpecList;
+    });
+
+    return {
+      ...step,
+      childTabs: filteredChildTabs
+    };
+  }).filter(step => step.childTabs.length > 0);
+};
+
 
