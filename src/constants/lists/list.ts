@@ -215,4 +215,70 @@ export listStepTabs = [
       },
     ]
   }
+];
+
+export const stepsPopup = [
+  {
+    stepName: 'step1',
+    id: 1222,
+    childTabs: [
+      {
+        attrTag: [
+          {
+            name: 'tag1',
+            listValue:[
+               {
+            charId: 890001,
+            parentId: 233323,
+            apiName: 'bal223',
+            value: "false",
+          }
+            ]
+          }
+        ],
+        charSpecList: [
+           {
+            charId: 800201,
+            parentId: 1223,
+            apiName: '1tabse1',
+            value: "12222",
+          }
+        ]
+      },
+      {
+        attrTag: [
+          {
+            name: 'tag2',
+            listValue:[]
+          },
+          {
+            name: 'tag3',
+            listValue:[]
+          }
+        ],
+        charSpecList: []
+      }
+    ]
+  },
+  {
+    stepName: "step2",
+    id: 1223,
+    childTabs: [
+      {
+            name: 'comp1',
+            listValue:[
+               {
+            charId: 890001,
+            parentId: 233323,
+            apiName: 'bal223',
+            value: "false",
+          }
+            ]
+      },
+       {
+            name: 'comp2',
+            listValue:[]
+      }
+    ]
+  }
 ]
