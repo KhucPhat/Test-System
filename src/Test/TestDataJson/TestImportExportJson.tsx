@@ -218,143 +218,192 @@ const TestImportExportJson = ({ data }) => {
 
   function isFloat(n) {
     return Number(n) === n && n % 1 !== 0;
+  };
+
+const handleCheckCharSpec = async (
+  original: string,
+  newItem: string,
+  listCharSpec: any[]
+) => {
+  if (checkFormatCharSpec(original) && !checkFormatCharSpec(newItem)) {
+    const details1 = extractDetails(original, "case1");
+
+    // Xóa phần tử nếu không đúng định dạng mới
+    listCharSpec = await new Promise((resolve) => {
+      const updatedList = listCharSpec.filter(char => char.id !== details1.id);
+      resolve(updatedList);
+    });
+  } else {
+    const details2 = extractDetails(newItem, "case2");
+
+    // Cập nhật hoặc thêm mới phần tử
+    listCharSpec = await new Promise((resolve) => {
+      const index = listCharSpec.findIndex(char => char.id === details2.id);
+      if (index !== -1) {
+        // Nếu phần tử đã tồn tại, cập nhật nó
+        listCharSpec[index] = details2;
+      } else {
+        // Nếu phần tử chưa tồn tại, thêm mới
+        listCharSpec.push(details2);
+      }
+      resolve(listCharSpec);
+    });
   }
 
-  function deepTypeCheck(original, newItem, path = "", errors = []) {
-    const detailCharSpec = extractDetails(value, "case 1");
-    if (typeof original === "string" && typeof newItem === "string") {
-      original = safeParse(original);
-      newItem = safeParse(newItem);
-    }
+  // Trả về danh sách đã cập nhật
+  return listCharSpec;
+}
 
-    if (typeof original !== typeof newItem && newItem) {
+  
+async function deepTypeCheck(original, newItem, path = "", errors = [], listCharSpec = []) {
+  // Sử dụng handleCheckCharSpec
+  listCharSpec = await handleCheckCharSpec(original, newItem, listCharSpec);
+
+  if (typeof original === "string" && typeof newItem === "string") {
+    original = safeParse(original);
+    newItem = safeParse(newItem);
+  }
+
+  if (typeof original !== typeof newItem && newItem) {
+    errors.push({
+      name: path,
+      message: `Expected type '${typeof original}' but found type '${typeof newItem}'`,
+    });
+  }
+
+  if (typeof original === "object" && original !== null && newItem !== null) {
+    if (Array.isArray(original) !== Array.isArray(newItem)) {
       errors.push({
         name: path,
-        message: `Expected type '${typeof original}' but found type '${typeof newItem}'`,
+        message: "One is an array and the other is not",
       });
     }
-
-    if (typeof original === "object" && original !== null && newItem !== null) {
-      if (Array.isArray(original) !== Array.isArray(newItem)) {
-        errors.push({
-          name: path,
-          message: "One is an array and the other is not",
-        });
+    if (Array.isArray(original)) {
+      if (original.length !== newItem.length) {
+        errors.push({ name: path, message: "Array lengths do not match" });
       }
-      if (Array.isArray(original)) {
-        if (original.length !== newItem.length) {
-          errors.push({ name: path, message: "Array lengths do not match" });
-        }
-        for (let i = 0; i < original.length; i++) {
-          deepTypeCheck(original[i], newItem[i], `${path}[${i}]`, errors);
-        }
-      } else {
-        const keysOriginal = Object.keys(original);
-        const keysNewItem = Object.keys(newItem);
-        if (keysOriginal.length !== keysNewItem.length) {
-          errors.push({ name: path, message: "Object keys do not match" });
-        }
-        for (const key of keysOriginal) {
-          if (!keysNewItem.includes(key)) {
-            errors.push({
-              name: `${path}.${key}`,
-              message: "Missing key in new item",
-            });
-          }
-          deepTypeCheck(original[key], newItem[key], `${path}.${key}`, errors);
-        }
+      for (let i = 0; i < original.length; i++) {
+        const result = await deepTypeCheck(original[i], newItem[i], `${path}[${i}]`, errors, listCharSpec);
+        errors = result.errors;
+        listCharSpec = result.listCharSpec;
       }
-    } else if (typeof original === "number" && typeof newItem === "number") {
-      if (
-        Number.isInteger(original) !== Number.isInteger(newItem) ||
-        isFloat(original) !== isFloat(newItem)
-      ) {
-        errors.push({
-          name: path,
-          message: "Number types do not match (expected Integer or Float)",
-        });
+    } else {
+      const keysOriginal = Object.keys(original);
+      const keysNewItem = Object.keys(newItem);
+      if (keysOriginal.length !== keysNewItem.length) {
+        errors.push({ name: path, message: "Object keys do not match" });
       }
-    } else if (typeof original === "string" && typeof newItem === "string") {
-      if (
-        /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/.test(original) &&
-        !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/.test(newItem)
-      ) {
-        errors.push({ name: path, message: "Date-time formats do not match" });
+      for (const key of keysOriginal) {
+        if (!keysNewItem.includes(key)) {
+          errors.push({
+            name: `${path}.${key}`,
+            message: "Missing key in new item",
+          });
+        }
+        const result = await deepTypeCheck(original[key], newItem[key], `${path}.${key}`, errors, listCharSpec);
+        errors = result.errors;
+        listCharSpec = result.listCharSpec;
       }
-    } else if (typeof original === "boolean" && typeof newItem !== "boolean") {
-      errors.push({ name: path, message: "Expected a boolean" });
     }
-
-    return errors; // Return the error list as an array of objects
+  } else if (typeof original === "number" && typeof newItem === "number") {
+    if (
+      Number.isInteger(original) !== Number.isInteger(newItem) ||
+      isFloat(original) !== isFloat(newItem)
+    ) {
+      errors.push({
+        name: path,
+        message: "Number types do not match (expected Integer or Float)",
+      });
+    }
+  } else if (typeof original === "string" && typeof newItem === "string") {
+    if (
+      /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/.test(original) &&
+      !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/.test(newItem)
+    ) {
+      errors.push({ name: path, message: "Date-time formats do not match" });
+    }
+  } else if (typeof original === "boolean" && typeof newItem !== "boolean") {
+    errors.push({ name: path, message: "Expected a boolean" });
   }
 
-  const handleImportJson = (event, currentData) => {
-    const file = event.target.files[0];
-    if (file && file.type === "application/json") {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        try {
-          const json = JSON.parse(e.target.result);
-          const newData = convertToJsonAttributeObject(json);
+  return { errors, listCharSpec }; // Trả về đối tượng chứa cả errors và listCharSpec
+}
 
-          // Thực hiện kiểm tra dữ liệu mới so với dữ liệu hiện có
-          const updatedData = [...listData];
-          let errors = [];
-          let errorMessages = [];
-          newData.forEach((newItem) => {
-            const existingItem = updatedData.find(
-              (item) => item.attrName === newItem.attrName
+const handleImportJson = async (event, currentData, listCurrentCharSpec) => {
+  const file = event.target.files[0];
+  if (file && file.type === "application/json") {
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      try {
+        const json = JSON.parse(e.target.result);
+        const newData = convertToJsonAttributeObject(json);
+
+        // Khởi tạo listCharSpec từ listCurrentCharSpec
+        let listCharSpec = [...listCurrentCharSpec];
+
+        // Thực hiện kiểm tra dữ liệu mới so với dữ liệu hiện có
+        const updatedData = [...currentData];
+        let errors = [];
+        let errorMessages = [];
+
+        for (const newItem of newData) {
+          const existingItem = updatedData.find(
+            (item) => item.attrName === newItem.attrName
+          );
+          if (existingItem) {
+            const result = await deepTypeCheck(
+              JSON.parse(existingItem.value),
+              JSON.parse(newItem.value),
+              newItem.attrName,
+              errors,
+              listCharSpec
             );
-            if (existingItem) {
-              deepTypeCheck(
-                JSON.parse(existingItem.value),
-                JSON.parse(newItem.value),
-                newItem.attrName,
-                errors
-              );
-              if (erros.length) {
-                const dataErros = [...errorMessages, ...errors];
-              }
-            } else {
-              updatedData.push(newItem); // Thêm mới nếu không tồn tại
+            errors = result.errors;
+            listCharSpec = result.listCharSpec;
+            if (errors.length) {
+              errorMessages = [...errorMessages, ...errors];
             }
-          });
-
-          if (errorMessages.length > 0) {
-            setSnackbar({
-              open: true,
-              message:
-                "Import Error: " +
-                errors
-                  .map((error) => `${error.name}: ${error.message}`)
-                  .join(", "),
-              severity: "error",
-            });
           } else {
-            setListData(updatedData);
-            setSnackbar({
-              open: true,
-              message: "JSON imported successfully!",
-              severity: "success",
-            });
+            updatedData.push(newItem); // Thêm mới nếu không tồn tại
           }
-        } catch (error) {
+        }
+
+        if (errorMessages.length > 0) {
           setSnackbar({
             open: true,
-            message: "Invalid JSON format!",
+            message:
+              "Import Error: " +
+              errorMessages
+                .map((error) => `${error.name}: ${error.message}`)
+                .join(", "),
             severity: "error",
           });
+        } else {
+          setListData(updatedData);
+          setSnackbar({
+            open: true,
+            message: "JSON imported successfully!",
+            severity: "success",
+          });
         }
-      };
-      reader.readAsText(file);
-    } else {
-      setSnackbar({
-        open: true,
-        message: "Please upload a valid JSON file!",
-        severity: "error",
-      });
-    }
-  };
+      } catch (error) {
+        setSnackbar({
+          open: true,
+          message: "Invalid JSON format!",
+          severity: "error",
+        });
+      }
+    };
+    reader.readAsText(file);
+  } else {
+    setSnackbar({
+      open: true,
+      message: "Please upload a valid JSON file!",
+      severity: "error",
+    });
+  }
+};
+
 
   const handleCloseSnackbar = () => {
     setSnackbar({ ...snackbar, open: false });
