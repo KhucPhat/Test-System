@@ -362,6 +362,13 @@ const handleImportJson = async (event, currentData, listCurrentCharSpec) => {
             listCharSpec = result.listCharSpec;
             if (errors.length) {
               errorMessages = [...errorMessages, ...errors];
+            } else {
+             Object.assign(existingItem, {
+        attributeValue: newItem.attributeValue,
+        isUse: true,
+        value: 'test',
+        charSpec: true
+      });
             }
           } else {
             updatedData.push(newItem); // Thêm mới nếu không tồn tại
