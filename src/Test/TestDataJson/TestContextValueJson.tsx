@@ -19,6 +19,10 @@ const TestContextValueJson = ({ data }) => {
   const [value, setValue] = useState('');
   const [keyPath, setKeyPath] = useState('');
 
+  funtion isPrimitive = (value) => {
+    return value !== Object(value);
+  }
+
   function parsePath(path) {
     const regex = /(?:^|\.|\[)(\d+\.\d+|[^\.\[\]]+)(?=\]|\[|\.)?/g;
     const keys = [];
@@ -33,43 +37,100 @@ const TestContextValueJson = ({ data }) => {
     let current = data;
     for (let i = 0; i < keyPath.length; i++) {
       const key = keyPath[i];
-      const isLast = i === keyPath.length - 1;
-  
-      if (Array.isArray(current)) {
-        const index = parseInt(key);
-        if (!isNaN(index) && index.toString() === key) {
-          if (index < current.length) {
-            if (isLast) {
-              current[index] = stringValue;
-              return data;
-            }
-            current = current[index];
-          } else {
-            console.error(`Chỉ số ${index} vượt quá giới hạn của mảng.`);
-            return null;
-          }
-        } else {
-          console.error(`Khóa ${key} không phải là số nguyên cho mảng.`);
-          return null;
-        }
-      } else if (typeof current === 'object' && current !== null) {
-        if (key in current) {
-          if (isLast) {
+      if (i === keyPath.length - 1) {
+        if (Array.isArray(current) && typeof key === "number") {
+          if (key < current.length) {
             current[key] = stringValue;
-            return data;
+          } else {
+            return null
           }
-          current = current[key];
+        } else if (Array.isArray(current[key])){
+          const allPrimitive = current[key].every(isPrimitive);
+          if (allPrimitive) {
+            return setInParent(data, keyPath.slice(0,1), value);
+          } else {
+            current[key] = value;
+          }
+        } else if ((typeof key === "string" || typeof key === "number") && current.hasOwnProperty(key)) {
+          current[key] = value;
         } else {
-          console.error(`Khóa ${key} không tồn tại trong đối tượng.`);
           return null;
         }
       } else {
-        console.error(`Đường dẫn ${key} không dẫn đến một đối tượng hợp lệ.`);
-        return null;
+        if(Array.isArray(current) && typeof key === 'number') {
+          if (key < current.length) {
+            current = current[key]
+          } else {
+            return null
+          }
+        } else if (Array.isArray(current[key])) {
+          const allPrimitive = current[key].every(isPrimitive);
+          if (allPrimitive) {
+            return setInParent(data, keyPath.slice(0, 1), stringValue);
+          } else {
+            current = current[key]
+          }
+        } else if (current.hasOwnProperty(key)) {
+          current = current[key];
+        } else {
+          return null;
+        }
+      }
+    };
+
+    return data;
+  };
+  
+  function setInParent(data, parentPath, value) {
+    let parent = data;
+
+    for (let i = 0; i < parentPath.length, i++) {
+      parent = parent[parentPath[i]];
+    }
+
+    parent[parentPath[parentPath.length - 1] = value];
+
+    return data;
+  };
+
+  function resetNestedObject(data, defaultData, keyPath){
+    let current = data;
+    let defaults = defaultData;
+
+    for (let i = 0; i< keyPath.length, i++) {
+      if (i === keyPath.length - 1) {
+        if (
+          Array.isArray(current)
+          && typeof key === "number"
+          && key < current.length
+          && Array.isArray(defaults)
+          && key < defaults.length
+        ) {
+          current[key] = defaults[key];
+        } else if (typeod key === 'string' && current.hasOwnProperty(key) && defaults.hasOwnProperty(key)){
+          current[key] = defaults[key]
+        } else {
+          return null
+        }
+      } else {
+        if (
+          Array.isArray(current)
+          && typeof key === "number"
+          && key < current.length
+          && Array.isArray(defaults)
+          && key < defaults.length
+        ) {
+          current = current[key];
+          defaults = defaults[key];
+        } else if (current.hasOwnProperty(key) && defaults.hasOwnProperty(key)) {
+          current=current[key];
+          defaults=defaults[key];
+        } else {
+          return null;
+        }
       }
     }
-    return data;
-  }    
+  };
 
   function handleChange(path, newValue) {
     const keys = parsePath(path);

@@ -13,67 +13,41 @@ const TestChangeValueJson = ({ data }) => {
     return keys;
   };
 
-  function updateNestedObjectAndKey(data, keyPath, newValue) {
+  function updateNestedObjectAndKey(data, keyPath, newValue, updateKeys = false) {
     let current = data;
-    let rootKeyToUpdate = null;
-    let oldKeyValue = null;
-
+    let parents = []; // Theo dõi các đối tượng cha và các khóa nếu updateKeys là true
+    let lastKey = null;
+  
+    // Duyệt đến khóa cuối cùng, ghi nhận dữ liệu cha tùy chọn
     for (let i = 0; i < keyPath.length; i++) {
-        const key = keyPath[i];
-        const isLast = i === keyPath.length - 1;
-
-        if (Array.isArray(current)) {
-            const index = parseInt(key);
-            if (!isNaN(index) && index.toString() === key) {
-                if (index < current.length) {
-                    if (isLast) {
-                        current[index] = newValue;
-                    }
-                    current = current[index];
-                } else {
-                    console.error(`Chỉ số ${index} vượt quá giới hạn của mảng.`);
-                    return null;
-                }
-            } else {
-                console.error(`Khóa ${key} không phải là số nguyên cho mảng.`);
-                return null;
-            }
-        } else if (typeof current === 'object' && current !== null) {
-            if (key in current) {
-                if (isLast) {
-                    // Capture the old value for potential root key update
-                    oldKeyValue = current[key];
-                    current[key] = newValue;
-                }
-                current = current[key];
-            } else {
-                console.error(`Khóa ${key} không tồn tại trong đối tượng.`);
-                return null;
-            }
-        } else {
-            console.error(`Đường dẫn ${key} không dẫn đến một đối tượng hợp lệ.`);
-            return null;
+      if (updateKeys) parents.push({ parent: current, key: keyPath[i] });
+      lastKey = keyPath[i];
+      if (typeof current[lastKey] === 'undefined') {
+        console.error(`Khóa ${lastKey} không tồn tại trong đối tượng.`);
+        return null;
+      }
+      if (i < keyPath.length - 1) current = current[lastKey];
+    }
+  
+    // Lưu giá trị ban đầu để có thể cập nhật khóa trong các đối tượng cha
+    let originalValue = current[lastKey];
+    current[lastKey] = newValue;
+  
+    // Tùy chọn cập nhật các khóa trong tất cả các đối tượng cha nếu khóa cũ trùng với giá trị ban đầu
+    if (updateKeys) {
+      parents.forEach(parentInfo => {
+        let parentObject = parentInfo.parent;
+        let key = parentInfo.key;
+        if (typeof key === 'string' && String(originalValue) === key && originalValue !== newValue) {
+          parentObject[newValue] = parentObject[originalValue];
+          delete parentObject[originalValue];
+          parentInfo.key = newValue; // Cập nhật tham chiếu trong mảng cha
         }
+      });
     }
-
-    // Check if the old value matches any root key, and update it
-    if (oldKeyValue && oldKeyValue in data) {
-        rootKeyToUpdate = oldKeyValue;
-    }
-    console.log(rootKeyToUpdate);
-    console.log(data)
-    console.log(oldKeyValue);
-
-    if (rootKeyToUpdate) {
-        const newObject = {...data};
-        newObject[newValue] = {...newObject[rootKeyToUpdate]};
-        delete newObject[rootKeyToUpdate];
-        return newObject;
-    }
-
+  
     return data;
-}
-
+  }  
 
   function handleChange(path, newValue) {
     const keys = parsePath(path);

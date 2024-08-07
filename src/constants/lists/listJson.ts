@@ -107,11 +107,11 @@ export const jsonMapString = `{
  `;
 
 export const jsonKeyNumber = `{
-   "0.1": {
+   "@8023|2|3#": {
              "attr12": "0.1",
              "attr23": 23,
              "attr33": false,
-              "attListLong": [23,23],
+              "attListLong": "@8023|2|3#",
              "attr43": {
                 "Ab1": {
                    "attr2312": "Ab1",
