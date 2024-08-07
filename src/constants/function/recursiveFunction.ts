@@ -231,4 +231,40 @@ export const copyAndSort = (menu) => {
 
   // Return the sorted array
   return copiedMenu;
+};
+
+// Hàm sao chép sâu để đảm bảo không thay đổi mảng gốc
+function deepCopy(obj) {
+  return JSON.parse(JSON.stringify(obj));
 }
+
+// Hàm đệ quy để sắp xếp mảng
+const sortMenus = (menuArray) => {
+  // Sử dụng slice() để tạo một bản sao của mảng hiện tại và sắp xếp
+  let sortedArray = menuArray.slice().sort((a, b) => (b.hasCategory === a.hasCategory) ? 0 : b.hasCategory ? 1 : -1);
+
+  // Duyệt qua từng phần tử trong mảng đã sao chép và xử lý các submenu
+  return sortedArray.map(menu => {
+    if (menu.submenu) {
+      // Sử dụng deepCopy để sao chép submenu trước khi đệ quy
+      // Điều này đảm bảo submenu được sắp xếp mà không thay đổi gốc
+      menu.submenu = sortMenus(deepCopy(menu.submenu));
+    }
+    return menu;
+  });
+};
+
+// Mảng ban đầu
+const menus = [
+  // Dữ liệu mảng giống như đã cung cấp ở trên
+];
+
+// Sao chép sâu mảng ban đầu để tránh thay đổi
+const originalMenus = deepCopy(menus);
+
+// Gọi hàm để sắp xếp mảng sao chép
+const sortedMenus = sortMenus(originalMenus);
+
+// In mảng đã được sắp xếp
+console.log(sortedMenus);
+

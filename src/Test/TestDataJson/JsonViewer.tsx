@@ -1,7 +1,7 @@
 import { Button, Snackbar, Typography } from "@mui/material";
-import React, { useState } from "react";
-import JSONFormatter from "./TestConvertJsonMap";
 import MuiAlert from "@mui/material/Alert";
+import { useState } from "react";
+import JSONFormatter from "./TestConvertJsonMap";
 
 const JSONViewer = ({ data }) => {
   const [snackbar, setSnackbar] = useState({
@@ -27,16 +27,18 @@ const JSONViewer = ({ data }) => {
   }
   const handleDownload = () => {
     // Parse the value to ensure it's valid JSON and to pretty-print
-    const formattedData = data.map(item => {
+    const formattedData = data
+      .map((item) => {
         try {
-            // Parse and re-stringify to format and clean up the JSON string
-            const parsedValue = JSON.parse(item.value);
-            return `"${item.attrName}": ${JSON.stringify(parsedValue, null, 2)}`;
+          // Parse and re-stringify to format and clean up the JSON string
+          const parsedValue = JSON.parse(item.value);
+          return `"${item.attrName}": ${JSON.stringify(parsedValue, null, 2)}`;
         } catch (error) {
-            console.error(`Error parsing JSON for ${item.attrName}: ${error}`);
-            return `"${item.attrName}": "Invalid JSON"`;
+          console.error(`Error parsing JSON for ${item.attrName}: ${error}`);
+          return `"${item.attrName}": "Invalid JSON"`;
         }
-    }).join(",\n");
+      })
+      .join(",\n");
 
     const jsonString = `{${formattedData}}`;
     const blob = new Blob([jsonString], { type: "application/json" });
@@ -47,7 +49,7 @@ const JSONViewer = ({ data }) => {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-};
+  };
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -87,7 +89,6 @@ const JSONViewer = ({ data }) => {
     setSnackbar({ ...snackbar, open: false });
   };
 
-  console.log(listData);
   return (
     <div>
       <div

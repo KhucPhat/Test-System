@@ -110,3 +110,19 @@ console.log("Result for object1:", processObject(object1));
 console.log("Result for object2:", processObject(object2));
 console.log("Result for object3:", processObject(object3));
 
+const items = [
+    { id: 1, name: 'A' },
+    { id: 2, name: 'B' },
+    { id: 3, name: 'C' },
+    { id: 4, name: 'D' },
+];
+
+const result = items.reduce((acc, item) => {
+    if (item.id > 2) {
+        acc.push(item.name);
+    }
+    return acc;
+}, []);
+
+console.log(result); // ['C', 'D']
+
